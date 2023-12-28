@@ -1,0 +1,30 @@
+#中文選單
+外來種植物辨識圖片 'x':0, 'y':0, 'width':812 , 'height':887
+
+歷史紀錄查詢圖片 'x':813, 'y':0, 'width':822 , 'height':887
+
+前往網頁圖片 'x':1635, 'y':0, 'width':865 , 'height':887
+
+開發人員圖片 'x':0, 'y':888, 'width':812 , 'height':799
+
+常見問題圖片 'x':813, 'y':888, 'width':822 , 'height':799
+
+切換中英文圖片 'x':635, 'y':888, 'width':865 , 'height':799
+
+
+#日文選單
+外来植物を見分ける
+履歴を検索する
+Webサイトにアクセス
+開発者
+FAQ
+言語切り替え
+
+
+#英文選單
+Identify Invasive Plants
+Search History
+Visit the Website
+Developers
+FAQ
+Language Setting

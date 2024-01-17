@@ -5,10 +5,11 @@ from .models import Plant, Record
 
 # Create your views here.
 
-def index(request):
+def identifier(request):
     """
     Return image and inference or return upload button
     """
+<<<<<<< HEAD
     if request.method == 'POST':
         # 取得上傳的圖片
         upload_img = request.FILES.get('image_input')
@@ -28,6 +29,25 @@ def index(request):
             description='描述'  # 這部分應該由表單或其他方式獲得
         )
         plant_instance.save()
+=======
+    if request.method == "POST":
+        print("post")
+        # print(request.FILES.get("image_input"))
+        upload_img = request.FILES.get("image_input")
+        
+        data = {"image": upload_img, "species": "frog", "invasion": False}
+        instance = Record(**data)
+        try: 
+            instance.full_clean()
+        except ValidationError as e:
+            print(e.message_dict)
+
+        instance.save()
+
+        image = instance.image
+        
+        return render(request, "plants/identifier.html", {"image":image})
+>>>>>>> 9a81ffd551d3acb05b5fc57da2c1d484dd14adea
 
         # 創建 Record 模型的實例
         record_instance = Record(
@@ -39,6 +59,7 @@ def index(request):
         # 返回一個響應或重定向
         return HttpResponse('圖片上傳成功！')
     else:
+<<<<<<< HEAD
         # 如果不是 POST 請求，顯示上傳按鈕
         return render(request, 'plants/index.html')
     
@@ -57,4 +78,35 @@ def faq(request):
 def contact(request):
     # Your logic here
     return render(request, 'plants/contact.html')
+=======
+        return render(request, "plants/identifier.html")
 
+    return HttpResponse("ok")
+>>>>>>> 9a81ffd551d3acb05b5fc57da2c1d484dd14adea
+
+# return yolov8 present model
+def rt_identifier(request):
+    pass
+
+# set index
+def index(request):
+    return render(request, "plants/index.html")
+
+# retrieve records
+def records(request):
+    pass
+
+# list all available species
+def plants(request):
+    pass
+
+# list all developers
+def developer(request):
+    return render(request, "plants/developers.html")
+
+# list all frequent asked questions
+def freq_question(request):
+    return render(request, "plants/freq_questions.html")
+
+def developer(request):
+     return render(request,'plants/developers.html')

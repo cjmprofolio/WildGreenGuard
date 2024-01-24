@@ -17,9 +17,9 @@ trans_dict = {
     "Tithonia diversifolia":["王爺葵","Tree marigold","ニトベギク"],
     "Eleusine indica":["牛筋草","Goosegrass","オヒシバ"],
     "Cynodon dactylon":["狗牙根","Bermuda Grass","ギョウギシバ"],
-    "Silvergrass":["芒草","Silver grass","ススキ"],
+    "Miscanthus species":["芒草","Silver grass","ススキ"],
     "Amaranthus spinosus":["刺莧","Pilose Beggarticks","ハリビユ"],
-    "Celosia cristata":["雞冠花","Silver cock's comb","セロシア"],
+    "Celosia argentea":["雞冠花","Silver cock's comb","セロシア"],
     "Cardiospermum halicacabum":["倒地鈴","Balloon vine","フウセンカズラ"],
     #Line bot圖文選單
     "qa":["常見問題","FAQ","FAQ"],

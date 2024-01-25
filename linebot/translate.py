@@ -33,7 +33,7 @@ trans_dict = {
     "upimg":["上傳圖片","Upload a picture","画像を選択"],
     "camera":["開啟相機","Turn on the camera","カメラで撮影"],
     "idsuc":["太棒了！[人名] 你用得很得心應手嘛!這就是[植物名]。\n如果還有其他的植物，也別忘了和我分享哦！","Wow, [人名], you nailed it! This is [植物名].\nIf there are any other plants, please don’t hesitate to share them with me!","やったね！[人名]、うまくいったよ！これが[植物名]だよ。\n他にも面白い植物があれば、ぜひ教えてくれるとうれしいな！"],
-    "idfail":["哎呀，辨識失敗了嗎？\n[人名]不要灰心，你可以試試換個角度拍攝，再傳給我圖片，我再幫你看看","Oh dear, the plant can't be found.\nCould you please take another photo and give it another try?","あらら、植物が見つからなかった。\nもう一度写真を取り直してみてくれる？"],
+    "idfail":["哎呀，辨識失敗了嗎？\n不要灰心，你可以試試換個角度拍攝，再傳給我圖片，我再幫你看看","Oh dear, the plant can't be found.\nCould you please take another photo and give it another try?","あらら、植物が見つからなかった。\nもう一度写真を取り直してみてくれる？"],
     "idagain":["是否再次辨識植物","Would you like to identify the plants again?","もう一度植物を識別する？"],
     "y":["是","Yes","はい"],
     "n":["否","No","いいえ"],

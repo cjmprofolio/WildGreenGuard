@@ -12,7 +12,7 @@ import io
 from identifier import identifier
 import time
 from gcloud import upload_blob_from_stream
-# import asyncio
+import asyncio
 
 
 app = FastAPI()
@@ -26,6 +26,7 @@ headers= {
 
 trans_dict_repo = {}
 trans_dict = {}
+img_queue = []
 timer = -1
 
 @app.get("/")
@@ -82,16 +83,25 @@ async def index(request: Request):
                             "type": "text",
                             "text" : trans_dict["norec"]
                     })
-                    payload["messages"]= [await get_history(user_records, data)]
-                # else:
-                #     species = data["species"]
-                #     records = get_species_records(userid, species, skip)
-                #     if not records:
-                #         payload["messages"].append({
-                #                 "type": "text",
-                #                 "text" : trans_dict["norec"]
-                #         })
-                #     payload["messages"].append(await display_history(records))
+                    else:   
+                        payload["messages"]= [
+                            await get_history(user_records, data),
+                            await quick_reply(text="是否再顯示其他的植物種類?", actions=[
+                                {"action_type":"postback", "label":trans_dict["y"], "data": json.dumps({"action": action, "skip": skip + 10})},
+                                {"action_type":"postback", "label":trans_dict["n"], "data": json.dumps(data)}])]
+                else:
+                    species = data["species"]
+                    records = get_species_records(userid, species, skip)
+                    if not records:
+                        payload["messages"].append({
+                                "type": "text",
+                                "text" : trans_dict["norec"]
+                        })
+                    else:
+                        payload["messages"]= [await display_history(records),
+                                          await quick_reply(text=trans_dict["prehis"], actions=[
+                            {"action_type":"postback", "label":trans_dict["y"], "data": json.dumps({"action": action, "species": species, "skip": skip + 5})},
+                            {"action_type":"postback", "label":trans_dict["n"], "data": json.dumps(data)}])]
             # elif data == "歷史紀錄查詢":
                 # user_records = get_user_records(userid=userid)
                 # if not user_records:
@@ -120,27 +130,36 @@ async def index(request: Request):
             await reply_message(payload)
         elif events[0]["type"] == "message":
              if events[0]["message"]["type"] == "image":
-                dump = json.dumps(events[0], indent=4)
-                # print(dump)
+                
                 # 取得 userid
                 # user_id = events[0]["source"]["userId"]
                 # print(user_id)
                 # 取得圖片
+                
                 img_id = events[0]["message"]["id"]
                 print(img_id)
-                # img_queue = []
-                # img_queue.append(img_id)
-                # time.sleep(3)
-                # await asyncio.sleep(3)
-                img = await get_upload_image(img_id, payload)
+                
+                global img_queue
+                img_queue.append(img_id)
+                img = await get_upload_image(img_id)
                 # 避免使用者傳多張圖片
-                if not isinstance(img, Image.Image):
+                time.sleep(3)
+                # await asyncio.sleep(3) 
+                if len(img_queue) > 1:
+                    img_queue = []
                     payload["messages"].append({
                         "type": "text",
                         "text": trans_dict["oneimg"] #"唉呀，只能傳一張植物照片，不可以貪心哦！" 
                     })
                     await reply_message(payload)
                     return "ok"
+                # if not isinstance(img, Image.Image):
+                #     payload["messages"].append({
+                #         "type": "text",
+                #         "text": trans_dict["oneimg"] #"唉呀，只能傳一張植物照片，不可以貪心哦！" 
+                #     })
+                #     await reply_message(payload)
+                #     return "ok"
                 # 導入模組辨別植物名稱跟是否為外來種
                 species, isinvasive = identifier(img)
                 # species = "other" #測試retry_confirm
@@ -154,7 +173,7 @@ async def index(request: Request):
                     img_url = await upload_blob_from_stream(img, f"record/{userid[:7]}/img_{datetime.now().strftime('%Y%m%d%H%M%S')}.jpg")
                     save_record(species, img_url, datetime.now(), userid)
                     # 成功辨別植物的回覆訊息
-                    payload["messages"].append(await identify_success(species))
+                    payload["messages"].append(await identify_success(species, userid))
                     await reply_message(payload)
                 else:
                     payload["messages"]=[
@@ -217,42 +236,53 @@ async def get_trans_dict(mode:str, **kwargs):
     return "ok"
 
 # 取得使用者上傳的圖片，並限制使用者上傳圖片的時間間隔需大於3秒
-async def get_upload_image(img_id, payload):
-    global timer
-    if not timer:
-        timer = time.time()
-    delay = time.time() - timer
-    print(timer, delay)
-    timer = time.time()
-    if delay > 5:
-        url=f"https://api-data.line.me/v2/bot/message/{img_id}/content"
-        headers = {"Authorization":f"Bearer {config.get('line-bot', 'channel_access_token')}"}
+async def get_upload_image(img_id):
+    # global timer
+    # if not timer:
+    #     timer = time.time()
+    # delay = time.time() - timer
+    # print(timer, delay)
+    # timer = time.time()
+    # if delay > 5:
+    #     url=f"https://api-data.line.me/v2/bot/message/{img_id}/content"
+    #     headers = {"Authorization":f"Bearer {config.get('line-bot', 'channel_access_token')}"}
+    #     # post跟get都要寫下面那一行程式碼
+    #     async with aiohttp.ClientSession() as session:
+    #         async with session.get(url=url, headers=headers) as response:
+    #             stream = response.content
+    #             st = await stream.read()
+    #             img = Image.open(io.BytesIO(st))
+    #             # img.show()
+    #     # print("return image")
+    #     # print(type(img))
+    #     return img
+    # else:
+    #     # # print("one image")
+    #     return -1
+    url=f"https://api-data.line.me/v2/bot/message/{img_id}/content"
         # post跟get都要寫下面那一行程式碼
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url=url, headers=headers) as response:
-                stream = response.content
-                st = await stream.read()
-                img = Image.open(io.BytesIO(st))
-                # img.show()
-        # print("return image")
-        # print(type(img))
-        return img
-    else:
-        # # print("one image")
-        return -1
-
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url=url, headers=headers) as response:
+            stream = response.content
+            st = await stream.read()
+            img = Image.open(io.BytesIO(st))
+            # img.show()
+    # print("return image")
+    # print(type(img))
+    return img
 
 # async def save_predict_record(name:str, url:str, date:datetime, user_id:str)-> None:
     
 #     return
 
 # 辨識圖片成功的回覆訊息
-async def identify_success(species):
-    # user_name = await get_user_name()
+async def identify_success(species,userid):
+    user_name = await get_user_name(userid)
+    plant_name_with_spaces = f" {trans_dict[species]} "
     msg = {
         "type": "text",
-        "text": trans_dict["idsuc"]
-        # "text": trans_dict["idsuc"].replace("[人名]", user_name).replace("[植物名]", species)
+        # "text": trans_dict["idsuc"]
+        "text": trans_dict["idsuc"].replace("[人名]", user_name).replace("[植物名]", plant_name_with_spaces)
     }
     return msg
 
@@ -261,44 +291,76 @@ async def identify_success(species):
 #     user_name = await get_user_name()
 #     msg = {
 #         "type": "text",
-#         "text": trans_dict["idsuc"].replace("[人名]", user_name)
+#         "text": trans_dict["idsuc"]
 #     }
 #     return msg
 
 # 詢問是否再次辨識植物
 async def retry_confirm():
     # action : postback data: 外來種植物辨識
-    return await quick_reply(trans_dict["idagain"], "postback", "postback", trans_dict["y"], trans_dict["n"])
+    return await quick_reply(trans_dict["idagain"], [{"action_type": "postback", "label": trans_dict["y"], "data": "外來種植物辨識"}, \
+                            {"action_type": "postback", "label": trans_dict["n"], "data": "no-data"}])
 
 # quick reply
-async def quick_reply(text:str, action_type_a:str, action_type_b:str, label_a:str, \
-                      label_b:str, imageUrl_a:str = None, imageUrl_b:str = None):
+async def quick_reply(text, actions):
+    quick_reply_items = []
+
+    for action in actions:
+        item = {
+            "type": "action",
+            "imageUrl": action.get("imageUrl"),
+            "action": {
+                "type": action["action_type"],
+                "label": action["label"]
+            }
+        }
+        try:
+            item["imageUrl"] = action["imageUrl"]
+        except:
+            pass
+        # Add additional parameters based on action type
+        if action["action_type"] == "postback":
+            item["action"]["data"] = action.get("data")
+
+        quick_reply_items.append(item)
 
     msg = {
-                "type": "text",
-                "text": text, 
-                "quickReply": {
-                    "items": [
-                        {
-                            "type": "action",
-                            "imageUrl": imageUrl_a,
-                            "action": {
-                                        "type": action_type_a,
-                                        "label": label_a 
-                                    }
-                        },
-                        {
-                            "type": "action",
-                            "imageUrl": imageUrl_b,
-                            "action": {
-                                        "type": action_type_b,
-                                        "label": label_b 
-                                    }
-                        }
-                    ]
-                }
+        "type": "text",
+        "text": text,
+        "quickReply": {
+            "items": quick_reply_items
         }
+    }
+
     return msg
+# async def quick_reply(text:str, action_type_a:str, action_type_b:str, label_a:str, \
+#                       label_b:str, imageUrl_a:str = None, imageUrl_b:str = None):
+
+#     msg = {
+#                 "type": "text",
+#                 "text": text, 
+#                 "quickReply": {
+#                     "items": [
+#                         {
+#                             "type": "action",
+#                             "imageUrl": imageUrl_a,
+#                             "action": {
+#                                         "type": action_type_a,
+#                                         "label": label_a 
+#                                     }
+#                         },
+#                         {
+#                             "type": "action",
+#                             "imageUrl": imageUrl_b,
+#                             "action": {
+#                                         "type": action_type_b,
+#                                         "label": label_b 
+#                                     }
+#                         }
+#                     ]
+#                 }
+#         }
+#     return msg
 
 async def get_all_records():
     # get_records()
@@ -313,8 +375,9 @@ async def upload_image():
     imageUrl_a = "https://storage.googleapis.com/green01/identify/1.png"
     imageUrl_b = "https://storage.googleapis.com/green01/identify/2.png"
     
-    return await quick_reply(trans_dict["upaimg"], "cameraRoll", "camera", trans_dict["upimg"], \
-                             trans_dict["camera"], imageUrl_a, imageUrl_b)
+    return await quick_reply(trans_dict["upaimg"], 
+                             [{"imageUrl":imageUrl_a, "action_type":"cameraRoll", "label":trans_dict["upimg"]},
+                            {"imageUrl":imageUrl_b, "action_type":"camera", "label":trans_dict["camera"]}])
 
 # 歷史紀錄查詢功能(列出使用者辨識成功的植物種類)
 async def get_history(records, data:dict):
@@ -333,21 +396,11 @@ async def get_history(records, data:dict):
             plant = get_plants(record["_id"])
             name = plant['scientific name']
             data = {"species": name,"action": "showup", "skip": 0}
-            # column = {
-            #     "imageUrl": plant["imgurl"],
-            #     "action":
-            #     {
-            #         "type": "postback",
-            #         "label": f"{trans_dict[name]} {name}",
-            #         "data": json.dumps(data)
-            #     }
-            # }
             
             column = {
                 "imageUrl": plant["imgurl"],
                 "action": {
                     "type": "postback",
-                    # "label": "test",
                     "data": json.dumps(data)
                 }
             }
@@ -397,7 +450,7 @@ async def get_history(records, data:dict):
         #      })
 
 # 歷史紀錄查詢功能(列出使用者辨識成功的植物圖片資訊)
-async def display_history(data:dict):
+async def display_history(records:dict):
     msg = {
             "type": "template",
             "altText": "歷史紀錄查詢",
@@ -406,36 +459,37 @@ async def display_history(data:dict):
                 "columns": []
             }
     }
-    records = get_species_records(data)
     for record in records:
         column ={
             "thumbnailImageUrl": record["image_url"],
             "imageBackgroundColor": "#FFFFFF",
-            "title": trans_dict[record["scientific_name"]],
-            "text": record["scientific_name"],
+            "title": trans_dict[record["species"]],
+            "text": record["date"].strftime("%Y-%m-%d"),
             "actions": [
                 {
                     "type": "postback",
-                    "label": "",
+                    "label": "wait",
                     "data": "歷史紀錄查詢"
                 },
             ]
         }
-        msg["columns"].append(column)
+        msg["template"]["columns"].append(column)
     
     return msg
 
 # 取得使用者名稱
-# async def get_user_name():
-#     url = "https://api.line.me/v2/bot/profile/{userId}"
-#     headers = {"Authorization":f"Bearer {config.get('line-bot', 'channel_access_token')}"}
-#     async with aiohttp.ClientSession() as session:
-#             async with session.get(url=url, headers=headers) as response:
-#                 res = await response.json()
-#                 print(res)
-#                 user_name = res["displayName"]
-#                 print(user_name)
-#             return user_name
+async def get_user_name(userid: str):
+    url = f"https://api.line.me/v2/bot/profile/{userid}"
+    headers = {"Authorization":f"Bearer {config.get('line-bot', 'channel_access_token')}"}
+    async with aiohttp.ClientSession() as session:
+            async with session.get(url=url, headers=headers) as response:
+                res = await response.json()
+                # print(res.status)
+                # print(res.text)
+                print(res)
+                user_name = res["displayName"]
+                # print(user_name)
+            return user_name
 
 
 # 取得圖文選單id

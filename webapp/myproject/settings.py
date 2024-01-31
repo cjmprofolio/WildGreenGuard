@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+from django.conf import settings
 from pathlib import Path
 import os
 
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "plants",
+    "linelogin"
 ]
 
 MIDDLEWARE = [
@@ -138,3 +139,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+line_login_id = '2003048189'
+line_login_secret = '7a0cf68524940a569b353977b64456c8'
+END_POINT = 'https://app.example.com/callbackplants'
+
+TENSORFLOW_SERVING_URL = 'http://localhost:8501/v1/models/model:predict'

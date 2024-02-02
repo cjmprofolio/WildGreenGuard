@@ -45,7 +45,7 @@ def getinfo():
 async def index(request: Request):
     # 從請求(request)中讀取JSON格式的內容
     body = await request.json()
-    # print(body)
+    print(body)
     # 從JSON內容中提取名為"events"的鍵對應的值
     events = body["events"]
 
@@ -71,7 +71,7 @@ async def index(request: Request):
         if events[0]["type"] == "postback":
             data = events[0]["postback"]["data"]
             # 外來種植物辨識功能-上傳一張植物圖片，附有上傳圖片及開啟相機的功能
-            if data == "外來種植物辨識":
+            if data == trans_dict["idplant"]:
                 payload["messages"].append(await upload_image())
             # 根據圖文選單所選擇的語言，以相應的語言回覆訊息
             elif data in ["richmenu-changed-to-chinese", "richmenu-changed-to-english", "richmenu-changed-to-japanese"]:
@@ -83,9 +83,12 @@ async def index(request: Request):
                     case "richmenu-changed-to-japanese":
                         await get_trans_dict("jp")
                 return "change language done"
-            # 歷史紀錄查詢回覆內容:好好欣賞現有的植物圖片吧!
+            # 歷史紀錄查詢回覆內容:好好欣賞植物圖片吧!
             elif data == trans_dict["enjimg"]:
                 payload["messages"].append(await view_image_info())
+            # 歷史紀錄查詢點選圖片旋轉木馬選單後出現使用者拍攝的圖片
+            elif data[8:15] == "storage":
+                payload["messages"]= [await share_img(data)]
             # 歷史紀錄查詢回覆內容:點選上方的「查看更多資訊」吧!
             elif data == trans_dict["clvimgin"]:
                 payload["messages"].append(await click_view_info())
@@ -120,7 +123,7 @@ async def index(request: Request):
                                 "type": "text",
                                 "text" : trans_dict["norec"]
                         })
-                    # 不再查看先前的歷史紀錄回覆:好好欣賞現有的植物圖片吧!(待修改)
+                    # 不再查看先前的歷史紀錄回覆:好好欣賞植物圖片吧!
                     else:
                         payload["messages"]= [await display_history(records),
                                           await quick_reply(text=trans_dict["prehis"], actions=[
@@ -130,12 +133,8 @@ async def index(request: Request):
         # 型別為message
         elif events[0]["type"] == "message":
              if events[0]["message"]["type"] == "image":
-                
-                # 取得 userid
-                # user_id = events[0]["source"]["userId"]
-                # print(user_id)
-                # 取得圖片
-                
+
+                # 取得圖片id
                 img_id = events[0]["message"]["id"]
                 print(img_id)
                 
@@ -175,19 +174,14 @@ async def index(request: Request):
                     save_record(species, img_url, datetime.now(), userid)
                     # 辨別植物成功的回覆訊息
                     payload["messages"].append(await identify_success(species, userid))
-                    
+                   
                 # 辨別植物失敗的回覆訊息
                 else:
                     payload["messages"]=[
-                        # await reply_message({
-                        #     "type" : "text",
-                        #     "text": trans_dict["idfail"]
-                        # }),
                         await identify_fail(),
                         await retry_confirm()
                     ]
                 await reply_message(payload)
-
     return "ok"        
 
 # 回覆訊息
@@ -213,9 +207,9 @@ async def set_language_repo():
 async def get_trans_dict(mode:str, **kwargs):
     # key : [中文0, 英文1, 日文2]
     lan_int = {"chi": 0, "en": 1, "jp": 2}
-    lan_id = {"richmenu-cfbf79ce1f2278b7fc3e357a06959689": "chi", 
-              "richmenu-5b9722a8f49899681b840c9f0dcb0237": "en", 
-              "richmenu-0e8521a8e122189162f55fa49ac0eda0": "jp"}
+    lan_id = {"richmenu-6fd7dd62a7a00d50acb56565c9676eed": "chi", 
+              "richmenu-b5f1a9d44f3642dc0bf8f210c1b93664": "en", 
+              "richmenu-c2ab21f8873a2b671ed64bfe84581b4b": "jp"}
 
     global trans_dict_repo
     # 如果翻譯字典尚未被設定，則呼叫 set_language_repo() 函數進行設定
@@ -246,40 +240,39 @@ async def get_upload_image(img_id):
     # print(timer, delay)
     # timer = time.time()
     # if delay > 5:
-    #     url=f"https://api-data.line.me/v2/bot/message/{img_id}/content"
+        url=f"https://api-data.line.me/v2/bot/message/{img_id}/content"
     #     headers = {"Authorization":f"Bearer {config.get('line-bot', 'channel_access_token')}"}
     #     # post跟get都要寫下面那一行程式碼
-    #     async with aiohttp.ClientSession() as session:
-    #         async with session.get(url=url, headers=headers) as response:
-    #             stream = response.content
-    #             st = await stream.read()
-    #             img = Image.open(io.BytesIO(st))
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url=url, headers=headers) as response:
+                stream = response.content
+                st = await stream.read()
+                img = Image.open(io.BytesIO(st))
     #             # img.show()
     #     # print("return image")
     #     # print(type(img))
-    #     return img
+        return img
     # else:
     #     # # print("one image")
     #     return -1
-    url=f"https://api-data.line.me/v2/bot/message/{img_id}/content"
-    # 使用 aiohttp 客戶端建立連線，發送 GET 請求
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url=url, headers=headers) as response:
-            stream = response.content
-            st = await stream.read()
-            img = Image.open(io.BytesIO(st))
+    # url=f"https://api-data.line.me/v2/bot/message/{img_id}/content"
+    # # 使用 aiohttp 客戶端建立連線，發送 GET 請求
+    # async with aiohttp.ClientSession() as session:
+    #     async with session.get(url=url, headers=headers) as response:
+    #         stream = response.content
+    #         st = await stream.read()
+    #         img = Image.open(io.BytesIO(st))
             # img.show()
     # print("return image")
     # print(type(img))
-    return img
+    # return img
 
-# 辨識圖片成功的回覆訊息
+# 辨識圖片成功的回覆訊息(帶入用戶名跟植物名)
 async def identify_success(species,userid):
     user_name = await get_user_name(userid)
     plant_name_with_spaces = f" {trans_dict[species]} "
     msg = {
         "type": "text",
-        # "text": trans_dict["idsuc"]
         "text": trans_dict["idsuc"].replace("[人名]", user_name).replace("[植物名]", plant_name_with_spaces)
     }
     return msg
@@ -314,7 +307,7 @@ async def quick_reply(text, actions):
             item["imageUrl"] = action["imageUrl"]
         except:
             pass
-        # Add additional parameters based on action type
+        # Add additional parameters based on action type 依照action的型別新增額外的參數
         if action["action_type"] == "postback":
             item["action"]["data"] = action.get("data")
 
@@ -337,7 +330,7 @@ async def upload_image():
     
     return await quick_reply(trans_dict["upaimg"], 
                              [{"imageUrl":imageUrl_a, "action_type":"cameraRoll", "label":trans_dict["upimg"]},
-                            {"imageUrl":imageUrl_b, "action_type":"camera", "label":trans_dict["camera"]}])
+                            {"imageUrl":imageUrl_b, "action_type":"camera", "label":trans_dict["cameraon"]}])
 
 # 旋轉木馬選單-歷史紀錄查詢功能(列出使用者辨識成功的植物種類)
 async def get_history(user_records, data:dict):
@@ -349,8 +342,7 @@ async def get_history(user_records, data:dict):
                 "columns": []
             }
     }
-    # carousel 5 records -> quick reply -> carousel next 5 records
-        
+    # carousel 10 records -> quick reply -> carousel other records
     # unique_record: 學名, image_url
     for record in user_records:
         plant = get_plants(record["_id"])
@@ -371,7 +363,6 @@ async def get_history(user_records, data:dict):
             ]
         }
         msg["template"]["columns"].append(column)
-    # print(msg)
     return msg
         
 
@@ -393,16 +384,23 @@ async def display_history(records:dict):
                 "imageUrl": record["image_url"],
                 "action": {
                     "type": "postback",
-                    "label": record["date"].strftime("%Y-%m-%d"),
-                    "data": "歷史紀錄查詢"
-                    # "data": "{'action': 'search', 'skip': 0}"
-                }
+                    "label": trans_dict["dl"],
+                    "data": record["image_url"]
+                } 
             }
             msg["template"]["columns"].append(column)
     print(msg)
         
     return msg
 
+# 歷史紀錄查詢點選圖片旋轉木馬選單後出現使用者拍攝的圖片
+async def share_img(data:str):
+    msg = {
+        "type": "image",
+        "originalContentUrl": data,
+        "previewImageUrl": data
+    }
+    return msg
 # 取得使用者名稱
 async def get_user_name(userid: str):
     url = f"https://api.line.me/v2/bot/profile/{userid}"
@@ -439,7 +437,14 @@ async def get_richmenu_id():
     headers = {"Authorization":f"Bearer {config.get('line-bot', 'channel_access_token')}"}
     req = requests.get(url=url,headers=headers)
 
-
+# 點選圖片旋轉木馬選單後跳出圖片功能(供分享、下載)
+# async def share_img():
+#     msg = {
+#     "type": "image",
+#     "originalContentUrl": "https://example.com/original.jpg",
+#     "previewImageUrl": "https://example.com/preview.jpg"
+#     }
+#     return msg
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port= 8000)

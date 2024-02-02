@@ -1,6 +1,4 @@
-import pymongo
 from pymongo import MongoClient
-from pymongo.errors import BulkWriteError
 from datetime import datetime
 import configparser
 

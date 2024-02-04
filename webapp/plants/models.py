@@ -12,7 +12,7 @@ class Plant(models.Model):
     description = models.TextField(max_length=200)
 
     def __str__(self) -> str:
-        return f"{self.species_chi}, {self.isinvasive}"
+        return f" {self.isinvasive},{self.species_en},{self.description}"
 
 
 class Record(models.Model):

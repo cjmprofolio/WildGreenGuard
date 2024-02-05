@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile</title>
+    <style>
+       body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+       .profile {
+        max-width: 300px;
+        margin: 40px auto;
+        padding: 40px;
+        border-radius: 10px;
+        background-color: #00c300; /* LINE green */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        color: white; /* For better contrast */
+        }
+        .profile img {
+        max-width: 100px;
+        border-radius: 50%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .profile h1 {
+        font-size: 28px;
+        margin-top: 20px;
+        color: #ffffff;
+        }
+        .profile p {
+        font-size: 18px;
+        color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="profile-img">
+        <img src="{{ picture_url }}" alt="Profile Image">
+    </div>
+    <div class="profile">
+        <h2>Name: {{ name }}</h2>
+        <p>ID: {{ user_id }}</p>
+        <p>Status: {{ status_message }}</p>
+    </div>
+</div>   
+</body>
+</html>

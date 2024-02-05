@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>LINE 登入按鈕</title>
+    <style>
+        .btn-line-login {
+            background-color: #00b900; /* LINE 綠色 */
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background-color 0.3s;
+            /* 新增的樣式 */
+            overflow: hidden; /* 確保內容不會超出按鈕邊界 */
+            vertical-align: middle; /* 垂直居中 */
+        }
+        
+        .btn-line-login img {
+            vertical-align: middle; /* 圖片垂直居中 */
+            padding-right: 8px; /* 在圖片和文字之間添加一些間隔 */
+        }
+    </style>
+</head>
+<body>
+    <a href="https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=2003048189&redirect_uri=https://app.example.com/callbackplants&state=55bf4ab911f14cab80ffa6165452821a&scope=profile%20openid&nonce=IcOZUwJ6M8tdUucXYR39uhGkitJnb7sDJ_RQcwDyYDc" class="btn-line-login">
+        <img src="/static/btn_base.png" alt="LINE "> 登入
+    </a>
+</body>
+</html>

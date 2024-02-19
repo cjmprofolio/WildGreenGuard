@@ -27,9 +27,7 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item" href="{% url 'plants:diagram' %}">{{ data }}</a></li>
-                            {% if request.user.is_authenticated %}
                             <li><a class="dropdown-item" href="{% url 'plants:records' %}">{{ record }}</a></li>
-                            {% endif %}
                         </ul>
                     </li>
                     <li class="nav-item dropdown">

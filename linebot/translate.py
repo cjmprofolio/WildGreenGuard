@@ -2,25 +2,56 @@ import json
 
 trans_dict = {
     # 物種
-    "Ageratum houstonianum":["紫花藿香薊","Flossflower","ムラサキカッコウアザミ"],
-    "Bidens pilosa var radiata":["大花咸豐草","Pilose Beggarticks","タチアワユキセンダングサ"],
-    "Bryophyllum pinnatum":["落地生根","Life plant","セイロンベンケイ"],
-    "Chloris barbata":["孟仁草","Swollen finger grass","クロリス・バルバタ"],
-    "Conyza species":["加拿大蓬","Horseweed","ヒメムカシヨモギ"],
-    "Crassocephalum crepidioides":["昭和草","Redflower ragleaf","ベニバナボロギク"],
-    "Lantana camara":["馬纓丹","Common lantana","ランタナ"],
-    "Leucaena leucocephala":["銀合歡","River tamarind","ギンネム"],
-    "Mikania micrantha":["小花蔓澤蘭","Bitter vine","ツルヒヨドリ"],
-    "Pennisetum purpureum":["象草","Napier grass","ナピアグラス"],
-    "Rhynchelytrum repens":["紅毛草","Natal Grass","ルビーガヤ"],
-    "Syngonium podophyllum":["合果芋","Arrowhead Plant","シンゴニウム・ポドフィラム"],
-    "Tithonia diversifolia":["王爺葵","Tree marigold","ニトベギク"],
-    "Eleusine indica":["牛筋草","Goosegrass","オヒシバ"],
-    "Cynodon dactylon":["狗牙根","Bermuda Grass","ギョウギシバ"],
-    "Miscanthus species":["芒草","Silver grass","ススキ"],
-    "Amaranthus spinosus":["刺莧","Pilose Beggarticks","ハリビユ"],
-    "Celosia argentea":["雞冠花","Silver cock's comb","セロシア"],
-    "Cardiospermum halicacabum":["倒地鈴","Balloon vine","フウセンカズラ"],
+    "Ageratum_houstonianum":["紫花藿香薊","Flossflower","ムラサキカッコウアザミ"],
+    "Bidens_pilosa_var_radiata":["大花咸豐草","Pilose Beggarticks","タチアワユキセンダングサ"],
+    "Bryophyllum_pinnatum":["落地生根","Life plant","セイロンベンケイ"],
+    "Chloris_barbata":["孟仁草","Swollen finger grass","クロリス・バルバタ"],
+    "Conyza_species":["加拿大蓬","Horseweed","ヒメムカシヨモギ"],
+    "Crassocephalum_crepidioides":["昭和草","Redflower ragleaf","ベニバナボロギク"],
+    "Lantana_camara":["馬纓丹","Common lantana","ランタナ"],
+    "Leucaena_leucocephala":["銀合歡","River tamarind","ギンネム"],
+    "Mikania_micrantha":["小花蔓澤蘭","Bitter vine","ツルヒヨドリ"],
+    "Pennisetum_purpureum":["象草","Napier grass","ナピアグラス"],
+    "Rhynchelytrum_repens":["紅毛草","Natal Grass","ルビーガヤ"],
+    "Syngonium_podophyllum":["合果芋","Arrowhead Plant","シンゴニウム・ポドフィラム"],
+    "Tithonia_diversifolia":["王爺葵","Tree marigold","ニトベギク"],
+    "Eleusine_indica":["牛筋草","Goosegrass","オヒシバ"],
+    "Cynodon_dactylon":["狗牙根","Bermuda Grass","ギョウギシバ"],
+    "Miscanthus_species":["芒草","Silver grass","ススキ"],
+    "Amaranthus_spinosus":["刺莧","Pilose Beggarticks","ハリビユ"],
+    "Celosia_argentea":["雞冠花","Silver cock's comb","セロシア"],
+    "Cardiospermum_halicacabum":["倒地鈴","Balloon vine","フウセンカズラ"],
+    # 植物圖鑑資訊
+    # 紫花藿香薊
+    "ahdes":["高30-100公分，葉子呈現鈍三角形或心形，\n分布於全台低海拔至1,300公尺地區。","It is an annual plant with a height ranging from 30 to 100 cm.\nThe leaves are ovate to triangular-ovate, with a length of 2 to 7 cm, having a blunt apex and a shallow heart-shaped base.\nThe edges of the leaves are serrated. It is distributed in regions with an elevation of up to 1,300 m.","高さ30-100 cmの一年草である。\n葉は長さ2-7 cmの卵形～三角状卵形、鈍頭で、基部は浅い心形となり、縁には鋸歯がある。\n標高1,300 m以下の地域に分布してる。"],
+    # 刺莧
+    "asdes":["高30-100公分，花為綠色，分布於全台田地。","The plant reaches a height of approximately 30 to 100 cm. The flower color is green.\nIt is distributed throughout Taiwan, particularly commonly found around cultivated fields.","草丈は30-100 cmほどになる。花の色は緑である。\n台湾全域に分布してる。特に畑地の周辺で多く見られる。"],
+    # 大花咸豐草
+    "bpvrdes":["高可達2公尺，開花期長，對天災耐性強，\n分布於全台低海拔至1,000公尺地區。","The plant reaches a height of 2m, blooms throughout the year, and is highly resistant to natural disasters.\nIt is distributed in low-altitude areas throughout Taiwan, up to an elevation of 1,000 m.","高さが2 mに達し、通年で開花し、環境ストレスに対する耐性が非常に高い植物であり、\n標高1,000 m以下の地域に分布してる。"],
+    # 雞冠花
+    "cades":["又稱青葙，高30-100公分，\n花為圓柱狀，顏色白色或紫紅色，分布於全台低海拔地區。","Commonly known as plumed cockscomb, it grows to a height of 30 to 100 cm,\nwith cylindrical-shaped flowers in white or purplish-red.It is distributed in low-altitude areas throughout Taiwan.","「ノゲイトウ」とも呼ばれ、高さ30-100 cmで、\n花は円柱状で、白色または赤紫色である。標高の低い地域に分布してる。"],
+    # 孟仁草
+    "cbdes":["高30-120公分，花為穗狀花序，顏色呈紫紅色。\n分布於全台低海拔和海邊地區。","It grows to a height of 30 to 120 cm, with spike-like inflorescences in a purplish-red color.\nIt is distributed in low-altitude and coastal areas throughout Taiwan.","草丈は30-120 cmほどになる。穂状花序であり、花の色は赤紫色である。\n標高の低い地域や海沿いに分布してる。"],
+    # 昭和草
+    "ccdes":["高可達1公尺，花為紅褐色，分布於全台低至中海拔開闊地區。","It reaches a height of up to 1 meter, with flowers in a reddish-brown color,\nand is distributed in broad regions at low to mid-altitudes throughout Taiwan.","高さが1 mに達し、花の色はレンガ色である。\n標高2,400 m以下の広い地域に分布してる。"],
+    # 狗牙根
+    "cddes":["高約15-25 公分，稈斜上或直立，分布於全台平地及丘陵地區。","It is approximately 15-25 cm tall, with stems that are inclined or erect.\nIt is distributed in plains and hilly areas throughout Taiwan.","高さは約15-25 cmで、茎は斜めまたは直立しており、\n全台の平地および丘陵地域に分布してる。"],
+    # 牛筋草
+    "eides":["根系深入土內，不易拔除，穗狀花序長3-9公分，全台都有生長。","The roots penetrate deeply, making it hard to remove.\nIt has a spike-like inflorescence, with the flower cluster measuring 3-9 cm in length,\nand it is distributed throughout Taiwan.","根が深く入り、引き抜きにくい。\n穂状花序であり、花序は3-9 cmの長さで、広い地域に分布してる。"],
+    # 馬纓丹
+    "lcdes":["葉子為楔形或略心形，花顏色多變、形狀為球形，\n分布於全台低海拔地區。","The leaves are wedge-shaped or heart-shaped.\nWith ball-shaped flowers, the corolla color is extremely diverse in Common lantana.\nIt is distributed in low-altitude throughout Taiwan.","葉の基部はくさび形～心形である。\n花色は多様で、ボール状に花が咲く。\n標高の低い地域に分布してる。"],
+    # 銀合歡
+    "lldes":["高可達10公尺，莢果長10-15公分，種子褐色，光滑具光澤，\n分布於全台3,000公尺以下地區。","It reaches a height of up to 10 m, with pods measuring 10-15 cm in length.\nThe seeds are brown, smooth, and shiny.\nIt is distributed in areas below 3,000 m altitude throughout Taiwan.","高さが10 mに達し、果実は10-15 cmの長さで、茶色の豆果であり、滑らかで光沢がある。\n標高3,000 m以下の地域に分布してる。"],
+    # 小花蔓澤蘭
+    "mmdes":["花冠為白色，葉子心形，莖細長，匍匐或攀緣，\n分布於全台至中低海拔1,000公尺地區。","The corolla is white, leaves are heart-shaped.\nThe stems are slender and long, usually climbing and twining around other objects.\nIt is distributed in areas below 1,000 m altitude throughout Taiwan.","花は白い小さな頭花をまとまった花序にして付ける。\n葉はハート形で、茎は細長く、他のものに絡みついて這い上がる。\n標高1,000 m以下の地域に分布してる。"],
+    # 象草
+    "ppdes":["高可達3公尺，細小剛毛摸起來柔軟舒適，\n分布於全台平地至中海拔1,500公尺地區。","It reaches a height of up to 3 m.\nThe inflorescence is a stiff terminal bristly spike, with a soft texture.\nIt is distributed in areas below 1,500 m altitude throughout Taiwan.","高さが3 mに達し、細かい剛毛があり触ると柔らかく快適で、\n標高1,500 m以下の地域に分布してる。"],
+    # 芒草
+    "msdes":["高約1-3公尺，花初期為淡黃色，分布於全台低海拔地區。","It reaches a height of approximately 1 to 3 m.\nDuring the start of the flowering stage, the inflorescence color presents as pale yellow.\nIt is distributed in low-altitude regions throughout Taiwan.","高さが約1-3 mで、穂が出始めた頃は淡黄色である。\n標高の低い地域に分布してる。"],
+    # 合果芋
+    "spdes":["葉子箭頭形，具攀附性，顏色白、綠相間，\n分布於全台北部低海拔地區。","With its arrowhead-shaped leaves, this climbing plant exhibits a lovely leaf color featuring a mix of white and green.\nIt is commonly found in low-altitude areas in northern Taiwan. ","葉は矢じり形で、つる性植物である。\nホワイトグリーン色のような綺麗な葉色をしてる。\n台湾北部の低標高地域に分布してる。"],
+    # 王爺葵
+    "tddes":["高可達3公尺，花瓣黃色，分布於全台至中低海拔地區。","It reaches a height of up to 3 m and has yellow petals.\nIt is distributed throughout Taiwan in low to mid-altitude areas.","高さが3 mに達し、黄色い花である。\n標高2,400 m以下の地域に分布してる。"],
     # Line bot圖文選單
     "qa":["常見問題","FAQ","FAQ"],
     "dev":["開發人員","Developers","開発者"],
@@ -50,6 +81,10 @@ trans_dict = {
     "disother":["是否再顯示其他的植物種類?","Would you like to see additional plant species?","他の植物種も表示するか？"],
     "curhis":["目前歷史紀錄裡只有上面的植物種類喔！","The current history record only contains plant species as above!","現在の履歴には上記の植物種のみが含まれている！"],
     "dl":["下載","Download","ダウンロード"],
+    # Line bot 網頁
+    "weblog":["想立即前往網站或獲取登入資訊於電腦端登入使用?","Would you like to visit the website immediately or obtain login information for logging in by computer?","Webサイトをすぐに訪れるか、それともコンピュータでログインするためのログイン情報を取得する？"],
+    "visweb":["前往網頁","Visit the website","Webサイトを訪れる"],
+    "loginfo":["登入資訊","Obtain login info","ログイン情報を取得する"],
     # 網頁
     "real":["即時影像植物辨識","Real-time Image-Based Plant Identification","リアルタイム画像識別"],
     "data":["植物資料庫","Plant Database","植物データベース"],
@@ -59,6 +94,16 @@ trans_dict = {
     "cameraoff":["關閉相機","Turn off the camera","カメラを閉じる"],
     "selectf":["選擇圖片","Select the picture","画像を選択"],
     "confirm":["確認","Upload","完了"],
+    "member":["成員","Members","メンバー"],
+    "scanqr":["掃描QR code註冊","Scan QR code to register","QR コードをスキャンして登録"],
+    "psi":["請登入","Please sign in","サインインしてください"],
+    "id":["使用者代號","Userid","ユーザID"],
+    "username":["使用者名稱","Name","ユーザー名"],
+    "signin":["登入","Sign in","サインイン"],
+    "login_error":["輸入的使用者代碼或使用者名稱有誤，或是用linebot的網頁按鈕重新取得登入資訊。","The entered userid or username is incorrect, or you can obtain login information again by tapping the Line Bot Website button.","入力されたユーザーIDまたはユーザー名が正しくありません。または、Line BotのWebサイトボタンをタップしてログイン情報を再取得できます。"],
+    "insp":["外來種","Invasive Species","外来種"],
+    "nasp":["非外來種","Native Species","在来種"],
+    "res":["結果","Result","結果"],
     # 常見問題
     "q1":["1. 介紹WildGreenGuard外來種植物圖片辨識。","1. Introduction to WildGreenGuard Invasive Plant Image Recognition","1. WildGreenGuard外来種植物画像判別の紹介してほしい。"],
     "a1":["Ans: 是一款以台灣入侵種為主題的外來種植物圖片辨識line機器人，\n含有中英日功能的辨識機器人，操作簡單、全家大小皆可使用。","Ans: It is a Line bot designed to identify invasive plant species in Taiwan.\nIt is equipped with image recognition capabilities and supports Chinese, English, and Japanese.","Ans: 台湾の外来種植物を判別するためのLineボットです。\n画像認識機能を備え、中国語、英語、日本語に対応しています。"],
@@ -68,6 +113,7 @@ trans_dict = {
     "a3":["Ans: WildGreenGuard是一款以台灣入侵種為主題的外來種植物圖片辨識line機器人，\n您上傳一般植物圖片可能無法滿足您的需求。","Ans: WildGreenGuard is a Line bot designed to identify invasive plant species in Taiwan.\nUploading pictures of common plants may not meet your needs.","Ans: WildGreenGuardは台湾の外来種植物しか判別できません。"],
     "q4":["4.圖片的歷史紀錄會保留多久?","4. How long will the history of uploaded images be retained?","4. 投稿した写真はいつまで保存されますか？"],
     "a4":["Ans: 歷史紀錄將會保留您一周內上傳的圖片。","Ans: The history of uploaded images will be retained for one week.","Ans: 最大で一週間まで保存されます。"],
+    # 
     # 人名
     "ZJM":["張家銘","ZHANG, JIA-MING","ちょうかめい"],
     "ZYT":["張雅婷","ZHANG, YA-TING","ちょうがてい"],

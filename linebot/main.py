@@ -244,7 +244,10 @@ async def index(request: Request):
                         await retry_confirm()
                     ]
                 await reply_message(payload)
+        
+        # 加入Line bot好友預設圖文選單文中文
         elif events[0]["type"] == "follow":
+            print("here")
             await get_trans_dict(userid, mode="chi")
             
     # for web login user 
@@ -315,9 +318,9 @@ async def get_trans_dict(userid: str, **kwargs) -> str:
 # 依據richmenuid設定語言
 async def language(userid: str) -> str:
     
-    lan_id = {"richmenu-305f12d5b99a7f2890c510126821cbb7": "chi", 
-              "richmenu-2ecff09a4a86f2d36918c2777002a677": "en", 
-              "richmenu-bed50ce2d13cae5b1d35dec01e9f2e4b": "jp"}
+    lan_id = {"richmenu-c7c4184b99f6045058330c2968890202": "chi", 
+              "richmenu-e74f84a53ba0fc2524a4669c708e1b0c": "en", 
+              "richmenu-3aee0a17a9335f5f101a5221c3a4bc59": "jp"}
     
     
     url = f"https://api.line.me/v2/bot/user/{userid}/richmenu"
@@ -463,9 +466,7 @@ async def get_history(user_records: list, data: dict) -> dict:
     # carousel 10 records -> quick reply -> carousel other records
     # unique_record: 學名, image_url
     for record in user_records:
-        print("get-user", record)
         plant = get_plants(record["_id"])
-        print(plant)
         name = plant["scientific name"]
         data = {"species": name,"action": "showup", "skip": 0}
 

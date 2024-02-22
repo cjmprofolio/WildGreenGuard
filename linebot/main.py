@@ -249,9 +249,9 @@ async def index(request: Request):
             
     # for web login user 
     else:
-        
+        is_species = events[0].get("species", False)
         # save user record
-        if img:
+        if is_species:
             species = events[0]["species"]
             isinvasive = events[0]["isinvasive"]
             
@@ -263,6 +263,7 @@ async def index(request: Request):
         # get all user records (取得使用者的所有歷史紀錄)
         else:
             userdata = get_all_records(userid)
+            print(userdata)
             return userdata
         
     return "ok"        
@@ -300,6 +301,7 @@ async def get_trans_dict(userid: str, **kwargs) -> str:
     mode = "" if not kwargs.get("mode") else kwargs.get("mode")
     # 如果未指定語言模式，則通過Line API獲取用戶的richMenuId設定語言
     #redis set get 
+    # r.set("richmenu-9144efc48d0149db4584bc40b299db07",language(userid))
     if not mode:
         mode = await language(userid) 
         
@@ -313,9 +315,9 @@ async def get_trans_dict(userid: str, **kwargs) -> str:
 # 依據richmenuid設定語言
 async def language(userid: str) -> str:
     
-    lan_id = {"richmenu-9144efc48d0149db4584bc40b299db07": "chi", 
-              "richmenu-adb1e22242d0396663ec4c5f8791e09c": "en", 
-              "richmenu-597ae55967ad54f9c746828679f9ac08": "jp"}
+    lan_id = {"richmenu-305f12d5b99a7f2890c510126821cbb7": "chi", 
+              "richmenu-2ecff09a4a86f2d36918c2777002a677": "en", 
+              "richmenu-bed50ce2d13cae5b1d35dec01e9f2e4b": "jp"}
     
     
     url = f"https://api.line.me/v2/bot/user/{userid}/richmenu"
@@ -461,8 +463,10 @@ async def get_history(user_records: list, data: dict) -> dict:
     # carousel 10 records -> quick reply -> carousel other records
     # unique_record: 學名, image_url
     for record in user_records:
+        print("get-user", record)
         plant = get_plants(record["_id"])
-        name = plant['scientific name']
+        print(plant)
+        name = plant["scientific name"]
         data = {"species": name,"action": "showup", "skip": 0}
 
         column ={

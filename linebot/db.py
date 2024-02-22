@@ -116,7 +116,7 @@ def get_all_records(userid: str) -> list:
         db = client.wwg
         users = db.users
         cursor = users.aggregate([
-            {"$match": {"userid": userid}},
+            {"$match": {"userid": {"$regex":f"^{userid}.+"}}},
             {"$project": {
                 "records": {
                     "$filter": {

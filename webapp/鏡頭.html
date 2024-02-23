@@ -3,16 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>Object detector</title>
-    
+    <style>
+        video {
+            width: 640px;
+            height: 640px;
+        }
+    </style>
 </head>
 <body>
 <video controls style="display:none" ></video>
 <br/>
 <canvas></canvas><br/>
 <button id="play">Play</button>&nbsp;
-<button id="stop">stop</button>
+<button id="pause">pause</button>
 
 <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+
 <script src="onnx.js" defer></script>
 </body>
 </html>

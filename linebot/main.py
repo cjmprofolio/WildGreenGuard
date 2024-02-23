@@ -13,7 +13,7 @@ import time
 from gcloud import upload_blob_from_stream
 from urllib.parse import quote
 import asyncio
-import redis
+# import redis
 
 # FastAPI
 app = FastAPI()
@@ -34,10 +34,10 @@ csrf_url = config.get("web", "csrf_url")
 access_token_url = config.get("web", "access_token_url")
 
 # redis連線
-redis_host = config.get("redis", "host")
-redis_port = config.getint("redis", "port")
-r= redis.Redis(host=redis_host, port=redis_port, decode_responses=True)
-r.ping()
+# redis_host = config.get("redis", "host")
+# redis_port = config.getint("redis", "port")
+# r= redis.Redis(host=redis_host, port=redis_port, decode_responses=True)
+# r.ping()
 
 
 # 讀取translate.json裡面的內容轉換為字典形式(初始為空字典)
@@ -86,6 +86,10 @@ async def index(request: Request):
     # 回覆訊息，訊息內容預設為空列表
     if "replyToken" in events[0]:
 
+        # 使用者加入Line bot(必須在語言切換前)
+        if events[0]["type"] == "follow":
+            return "new user"
+
         # 套用目前設定語言
         await get_trans_dict(userid)
 
@@ -94,7 +98,14 @@ async def index(request: Request):
             "replyToken" : replyToken,
             "messages" :[]
         }
+        
+        # 加入Line bot好友預設圖文選單文中文
+        # if events[0]["type"] == "follow":
+            # print("here")
+            # await language(userid)
+            # await get_trans_dict(userid, mode="chi")
         # 型別為postback，取出postback裡面的data
+        
         if events[0]["type"] == "postback":
             data = events[0]["postback"]["data"]
 
@@ -244,11 +255,6 @@ async def index(request: Request):
                         await retry_confirm()
                     ]
                 await reply_message(payload)
-        
-        # 加入Line bot好友預設圖文選單文中文
-        elif events[0]["type"] == "follow":
-            print("here")
-            await get_trans_dict(userid, mode="chi")
             
     # for web login user 
     else:
@@ -302,25 +308,29 @@ async def get_trans_dict(userid: str, **kwargs) -> str:
         
     # 從kwargs取出語言mode
     mode = "" if not kwargs.get("mode") else kwargs.get("mode")
+    # mode = "chi" if not kwargs.get("mode") else kwargs.get("mode") 
     # 如果未指定語言模式，則通過Line API獲取用戶的richMenuId設定語言
     #redis set get 
     # r.set("richmenu-9144efc48d0149db4584bc40b299db07",language(userid))
+    # if not mode:
+    #     mode = await language(userid)
     if not mode:
-        mode = await language(userid) 
+
+        mode = await language(userid)  
         
-    global trans_dict
-    
-    # 使用字典生成式建立 trans_dict 字典，選擇對應語言模式的翻譯
-    trans_dict = {key : value[lan_int[mode]] for key, value in trans_dict_repo.items()}
+        global trans_dict
+        
+        # 使用字典生成式建立 trans_dict 字典，選擇對應語言模式的翻譯
+        trans_dict = {key : value[lan_int[mode]] for key, value in trans_dict_repo.items()}
 
     return "ok"
 
 # 依據richmenuid設定語言
 async def language(userid: str) -> str:
     
-    lan_id = {"richmenu-c7c4184b99f6045058330c2968890202": "chi", 
-              "richmenu-e74f84a53ba0fc2524a4669c708e1b0c": "en", 
-              "richmenu-3aee0a17a9335f5f101a5221c3a4bc59": "jp"}
+    lan_id = {"richmenu-9cf22eeebf998d43fb9776e889439c97": "chi", 
+              "richmenu-bb65c87c09ff5bc83643d6bd39f8e3f3": "en", 
+              "richmenu-52565c393fb6eab21ebee35713e7ccd6": "jp"}
     
     
     url = f"https://api.line.me/v2/bot/user/{userid}/richmenu"

@@ -24,7 +24,6 @@ print(richMenuAliasIds)
 # 刪除RichMenuAliasId
 for richMenuAliasId in richMenuAliasIds :
     url= f"https://api.line.me/v2/bot/richmenu/alias/{richMenuAliasId}" #不可動
-    # headers = {"Authorization":"Bearer R/qZkeLXVhWeQTRq47q0OHABUeMjQOscOnLKpFEXSvwuqrYt2f9wl6F8X665PGX/yIERu8hkrHz0zihp17LurHosqIlrdZfobz3+zi9rvRx0oFM/V78dXYOvdlBt4bHh0mrzWXu3fgG+kb4otToXiQdB04t89/1O/w1cDnyilFU="}
     req = requests.delete(url=url, headers=headers)
     print(req.status_code)
 
@@ -42,7 +41,6 @@ print(richMenuIds)
 # 刪除richmenuid
 for richMenuId in richMenuIds:
     url= f"https://api.line.me/v2/bot/richmenu/{richMenuId}" #不可動
-    # headers = {"Authorization":"Bearer R/qZkeLXVhWeQTRq47q0OHABUeMjQOscOnLKpFEXSvwuqrYt2f9wl6F8X665PGX/yIERu8hkrHz0zihp17LurHosqIlrdZfobz3+zi9rvRx0oFM/V78dXYOvdlBt4bHh0mrzWXu3fgG+kb4otToXiQdB04t89/1O/w1cDnyilFU="}
     req = requests.delete(url=url, headers=headers)
     print(req.status_code)
 

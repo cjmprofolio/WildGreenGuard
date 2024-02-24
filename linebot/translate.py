@@ -100,6 +100,7 @@ trans_dict = {
     "id":["使用者代號","Userid","ユーザID"],
     "username":["使用者名稱","Name","ユーザー名"],
     "signin":["登入","Sign in","サインイン"],
+    "signout":["登出","Sign out","サインアウト"],
     "login_error":["輸入的使用者代碼或使用者名稱有誤，或是用linebot的網頁按鈕重新取得登入資訊。","The entered userid or username is incorrect, or you can obtain login information again by tapping the Line Bot Website button.","入力されたユーザーIDまたはユーザー名が正しくありません。または、Line BotのWebサイトボタンをタップしてログイン情報を再取得できます。"],
     "insp":["外來種","Invasive Species","外来種"],
     "nasp":["非外來種","Native Species","在来種"],

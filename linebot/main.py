@@ -146,7 +146,7 @@ async def index(request: Request):
                 ]
 
             # 歷史紀錄查詢回覆內容:好好欣賞植物圖片吧!
-            elif data == trans_dict["enjimg"]:
+            elif data == "enjimg":
                 payload["messages"].append(await view_image_info())
 
             # 歷史紀錄查詢點選圖片旋轉木馬選單後出現使用者拍攝的圖片
@@ -154,7 +154,7 @@ async def index(request: Request):
                 payload["messages"]= [await share_img(data)]
 
             # 歷史紀錄查詢回覆內容:點選上方的「查看更多資訊」吧!
-            elif data == trans_dict["clvimgin"]:
+            elif data == "clvimgin":
                 payload["messages"].append(await click_view_info())
 
             # 歷史紀錄查詢功能的data
@@ -180,7 +180,7 @@ async def index(request: Request):
                             await get_history(user_records, data),
                             await quick_reply(text=trans_dict["disother"], actions=[
                                 {"action_type":"postback", "label":trans_dict["y"], "data": json.dumps({"action": action, "skip": skip + 10})},
-                                {"action_type":"postback", "label":trans_dict["n"], "data": trans_dict["clvimgin"]}])]
+                                {"action_type":"postback", "label":trans_dict["n"], "data": "clvimgin"}])]
                         
                 # 圖片旋轉木馬選單歷史紀錄(Mongodb)
                 else:
@@ -199,7 +199,7 @@ async def index(request: Request):
                         payload["messages"]= [await display_history(records),
                                           await quick_reply(text=trans_dict["prehis"], actions=[
                             {"action_type":"postback", "label":trans_dict["y"], "data": json.dumps({"action": action, "species": species, "skip": skip + 5})},
-                            {"action_type":"postback", "label":trans_dict["n"], "data": trans_dict["enjimg"]}])]
+                            {"action_type":"postback", "label":trans_dict["n"], "data": "enjimg"}])]
             await reply_message(payload)
 
         # 型別為message
@@ -327,10 +327,12 @@ async def get_trans_dict(userid: str, **kwargs) -> str:
 
 # 依據richmenuid設定語言
 async def language(userid: str) -> str:
+
+    # r.hset(userid,)
     
-    lan_id = {"richmenu-9cf22eeebf998d43fb9776e889439c97": "chi", 
-              "richmenu-bb65c87c09ff5bc83643d6bd39f8e3f3": "en", 
-              "richmenu-52565c393fb6eab21ebee35713e7ccd6": "jp"}
+    lan_id = {"richmenu-6bd1a2d5fc4f1f38b661ad6d08308376": "chi", 
+              "richmenu-73efc46a2b3173c9448274e666ea785e": "en", 
+              "richmenu-e87fd41a49179d86c5730ea05a163bf7": "jp"}
     
     
     url = f"https://api.line.me/v2/bot/user/{userid}/richmenu"

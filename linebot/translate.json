@@ -384,6 +384,11 @@
         "Sign in",
         "サインイン"
     ],
+    "signout": [
+        "登出",
+        "Sign out",
+        "サインアウト"
+    ],
     "login_error": [
         "輸入的使用者代碼或使用者名稱有誤，或是用linebot的網頁按鈕重新取得登入資訊。",
         "The entered userid or username is incorrect, or you can obtain login information again by tapping the Line Bot Website button.",

@@ -11,9 +11,7 @@ import io
 from identifier import identifier
 import time
 from gcloud import upload_blob_from_stream
-from urllib.parse import quote
-import asyncio
-# import redis
+import redis
 
 # FastAPI
 app = FastAPI()
@@ -34,20 +32,17 @@ csrf_url = config.get("web", "csrf_url")
 access_token_url = config.get("web", "access_token_url")
 
 # redis連線
-# redis_host = config.get("redis", "host")
-# redis_port = config.getint("redis", "port")
-# r= redis.Redis(host=redis_host, port=redis_port, decode_responses=True)
-# r.ping()
+redis_host = config.get("redis", "host")
+redis_port = config.getint("redis", "port")
+r= redis.Redis(host=redis_host, port=redis_port, decode_responses=True)
+r.ping()
 
 
 # 讀取translate.json裡面的內容轉換為字典形式(初始為空字典)
 trans_dict_repo = {}
 # translate.json裡面的翻譯內容(初始為空字典)
 trans_dict = {}
-# 圖片張數(初始為空列表)
-# img_queue = []
-# 計時器初始值為-1
-# timer = -1
+
 
 # Fast API 讀取
 @app.get("/")
@@ -167,11 +162,11 @@ async def index(request: Request):
                 if action == "search":
                     user_records = get_user_records(userid, skip)
 
-                    # 歷史紀錄植物物種小於10種的回覆:目前歷史紀錄裡只有上面的植物種類喔！
+                    # 沒有歷史紀錄的回覆:沒有任何歷史紀錄喔!
                     if not user_records:
                         payload["messages"].append({
                             "type": "text",
-                            "text" : trans_dict["curhis"] 
+                            "text" : trans_dict["norec"]
                     })
                         
                     # 歷史紀錄查詢quick reply:是否再顯示其他的植物種類?
@@ -187,11 +182,11 @@ async def index(request: Request):
                     species = data["species"]
                     records = get_species_records(userid, species, skip)
 
-                    # 沒有歷史紀錄的回覆:沒有任何歷史紀錄喔!
+                    # 歷史紀錄植物物種小於10種的回覆:目前歷史紀錄裡只有上面的植物種類喔！
                     if not records:
                         payload["messages"].append({
                                 "type": "text",
-                                "text" : trans_dict["norec"]
+                                "text" : trans_dict["curhis"]
                         })
 
                     # 不再查看先前的歷史紀錄回覆:好好欣賞植物圖片吧!
@@ -208,29 +203,17 @@ async def index(request: Request):
 
                 # 取得圖片id
                 img_id = events[0]["message"]["id"]
-                # print(img_id)
-                
-                # global img_queue
-                # img_queue.append(img_id)
+
                 img = await get_upload_image(img_id)
-                # 避免使用者傳多張圖片
-                # time.sleep(3)
-                # await asyncio.sleep(3) 
-                # if len(img_queue) > 1:
-                #     img_queue = []
-                #     payload["messages"].append({
-                #         "type": "text",
-                #         "text": trans_dict["oneimg"] #"唉呀，只能傳一張植物照片，不可以貪心哦！" 
-                #     })
-                #     await reply_message(payload)
-                #     return "ok"
-                # if not isinstance(img, Image.Image):
-                #     payload["messages"].append({
-                #         "type": "text",
-                #         "text": trans_dict["oneimg"] #"唉呀，只能傳一張植物照片，不可以貪心哦！" 
-                #     })
-                #     await reply_message(payload)
-                #     return "ok"
+                
+                # 
+                current_time = time.time()
+                previous_time = 0 if not r.hget(name=userid, key="last_img_time") else r.hget(name=userid, key="last_img_time")
+                r.hset(name=userid, key="last_img_time", value=current_time)
+
+                if current_time - float(previous_time) < 3:
+                    return 
+                
 
                 # 導入模組辨別植物名稱跟是否為外來種(identifier.py)
                 species, isinvasive = await identifier(img)
@@ -277,6 +260,7 @@ async def index(request: Request):
         
     return "ok"        
 
+
 # 回覆訊息
 async def reply_message(payload: dict) -> str:
     url = "https://api.line.me/v2/bot/message/reply"
@@ -307,33 +291,33 @@ async def get_trans_dict(userid: str, **kwargs) -> str:
         await set_language_repo()
         
     # 從kwargs取出語言mode
-    mode = "" if not kwargs.get("mode") else kwargs.get("mode")
-    # mode = "chi" if not kwargs.get("mode") else kwargs.get("mode") 
+    mode = "" if not kwargs.get("mode") else kwargs.get("mode") 
     # 如果未指定語言模式，則通過Line API獲取用戶的richMenuId設定語言
-    #redis set get 
-    # r.set("richmenu-9144efc48d0149db4584bc40b299db07",language(userid))
-    # if not mode:
-    #     mode = await language(userid)
-    if not mode:
 
+    if not mode:
         mode = await language(userid)  
-        
-        global trans_dict
-        
-        # 使用字典生成式建立 trans_dict 字典，選擇對應語言模式的翻譯
-        trans_dict = {key : value[lan_int[mode]] for key, value in trans_dict_repo.items()}
+
+    # 
+    r.hset(name=userid, key="mode", value=mode)
+
+    global trans_dict
+    
+    # 使用字典生成式建立 trans_dict 字典，選擇對應語言模式的翻譯
+    trans_dict = {key : value[lan_int[mode]] for key, value in trans_dict_repo.items()}
 
     return "ok"
 
-# 依據richmenuid設定語言
-async def language(userid: str) -> str:
 
-    # r.hset(userid,)
+# 依據richmenuid設定語言
+async def language(userid: str) -> str: 
     
-    lan_id = {"richmenu-6bd1a2d5fc4f1f38b661ad6d08308376": "chi", 
-              "richmenu-73efc46a2b3173c9448274e666ea785e": "en", 
-              "richmenu-e87fd41a49179d86c5730ea05a163bf7": "jp"}
+    mode = r.hget(name=userid, key="mode")
+    if mode:
+        return mode
     
+    lan_id = {"richmenu-dcdf1066f7a3e966f6f8c67dfea82165": "chi", 
+              "richmenu-2e7e938dc7dc9bc85467e2a1b390b0e4": "en", 
+              "richmenu-2af34192d6e40ad1954d4e874289ac03": "jp"}
     
     url = f"https://api.line.me/v2/bot/user/{userid}/richmenu"
         # 使用 aiohttp 客戶端建立連線，發送 GET 請求
@@ -343,7 +327,6 @@ async def language(userid: str) -> str:
             print(res["richMenuId"])
             # 根據回傳的 richMenuId 取得對應的語言模式
             mode = lan_id[res["richMenuId"]]
-            print(mode)
 
     return mode
 
@@ -539,7 +522,11 @@ async def share_img(data: str) -> dict:
 # 取得使用者名稱
 async def get_user_name(userid: str) -> str:
     # redis hset hget userid: main key, richmenuid & display_name : sub key[expire 20 mins] 
+    user_name = r.hget(name=userid, key="display_name")
 
+    if user_name:
+        return user_name
+    
     url = f"https://api.line.me/v2/bot/profile/{userid}"
     headers = {"Authorization":f"Bearer {config.get('line-bot', 'channel_access_token')}"}
     async with aiohttp.ClientSession() as session:
@@ -547,6 +534,9 @@ async def get_user_name(userid: str) -> str:
             res = await response.json()
             # print(res)
             user_name = res["displayName"]
+
+            r.hset(name=userid, key="display_name", value=user_name)
+
         return user_name
 
 # 是否再查看先前的歷史紀錄quick reply 按否的回覆: 好好欣賞植物圖片吧!   

@@ -27,6 +27,7 @@ headers= {
 }
 
 # 帶入config.ini檔案裏面網頁的資訊
+web_dns = config.get("web", "web_dns")
 base_url = config.get("web", "base_url")
 csrf_url = config.get("web", "csrf_url")
 access_token_url = config.get("web", "access_token_url")
@@ -61,6 +62,8 @@ async def index(request: Request):
     if "application/json" in content_type:
         # print("here")
         body = await request.json()
+    
+    # 取得網頁端傳的payload跟image
     elif "multipart/form-data" in content_type:
         form = await request.form()
         body = json.loads(form.get("payload"))
@@ -94,13 +97,7 @@ async def index(request: Request):
             "messages" :[]
         }
         
-        # 加入Line bot好友預設圖文選單文中文
-        # if events[0]["type"] == "follow":
-            # print("here")
-            # await language(userid)
-            # await get_trans_dict(userid, mode="chi")
         # 型別為postback，取出postback裡面的data
-        
         if events[0]["type"] == "postback":
             data = events[0]["postback"]["data"]
 
@@ -206,7 +203,7 @@ async def index(request: Request):
 
                 img = await get_upload_image(img_id)
                 
-                # 
+                # 避免使用者一次上傳多張圖片進行辨識
                 current_time = time.time()
                 previous_time = 0 if not r.hget(name=userid, key="last_img_time") else r.hget(name=userid, key="last_img_time")
                 r.hset(name=userid, key="last_img_time", value=current_time)
@@ -332,19 +329,8 @@ async def language(userid: str) -> str:
 
 # 取得使用者上傳的圖片，並限制使用者上傳圖片的時間間隔需大於3秒
 async def get_upload_image(img_id: str):
-    # multi_img = {}  
-    # if not multi_img:
-    #     multi_img["img_id"]= img_id
-    #     r.hkeys() 
-    # global timer
-    # if not timer:
-    #     timer = time.time()
-    # delay = time.time() - timer
-    # print(timer, delay)
-    # timer = time.time()
-    # if delay > 5:
     url=f"https://api-data.line.me/v2/bot/message/{img_id}/content"
-#     headers = {"Authorization":f"Bearer {config.get('line-bot', 'channel_access_token')}"}
+
     # post跟get都要寫下面那一行程式碼
     async with aiohttp.ClientSession() as session:
         async with session.get(url=url, headers=headers) as response:
@@ -355,20 +341,6 @@ async def get_upload_image(img_id: str):
 #     # print("return image")
     # print(type(img))
     return img
-    # else:
-    #     # # print("one image")
-    #     return -1
-    # url=f"https://api-data.line.me/v2/bot/message/{img_id}/content"
-    # # 使用 aiohttp 客戶端建立連線，發送 GET 請求
-    # async with aiohttp.ClientSession() as session:
-    #     async with session.get(url=url, headers=headers) as response:
-    #         stream = response.content
-    #         st = await stream.read()
-    #         img = Image.open(io.BytesIO(st))
-            # img.show()
-    # print("return image")
-    # print(type(img))
-    # return img
 
 # 辨識圖片成功的回覆訊息(帶入用戶名跟植物名)
 async def identify_success(species: str,userid: str) -> dict:
@@ -567,7 +539,7 @@ async def login_info(userid: str, display_name: str)  -> str:
     mode = await language(userid)
     token = await get_access_token(userid, display_name)
 
-    uri = base_url + f"?source=True&userid={userid[:7]}&mode={mode}&token={token}"
+    uri = web_dns + f"?source=True&userid={userid[:7]}&mode={mode}&token={token}"
     # print(uri)
 
     return uri

@@ -12,9 +12,14 @@ from identifier import identifier
 import time
 from gcloud import upload_blob_from_stream
 import redis
+import logging
 
 # FastAPI
 app = FastAPI()
+
+# 將logs級別設置為DEBUG
+logging.basicConfig(level="DEBUG")
+
 
 # 帶入config.ini檔案裏面的資訊
 config = configparser.ConfigParser()
@@ -36,7 +41,8 @@ access_token_url = config.get("web", "access_token_url")
 redis_host = config.get("redis", "host")
 redis_port = config.getint("redis", "port")
 r= redis.Redis(host=redis_host, port=redis_port, decode_responses=True)
-r.ping()
+if r.ping():
+    logging.info(f"Pinged your deployment. You successfully connected to Redis!")
 
 
 # 讀取translate.json裡面的內容轉換為字典形式(初始為空字典)
@@ -54,13 +60,12 @@ def getinfo():
 @app.post("/")
 async def index(request: Request):
     # 從請求(request)中讀取JSON格式的內容
-    print(await request.body())
+    logging.debug(await request.body())
 
     # 取得headers裡面的content_type 
     content_type = request.headers.get("content-type", "")
 
     if "application/json" in content_type:
-        # print("here")
         body = await request.json()
     
     # 取得網頁端傳的payload跟image
@@ -216,7 +221,7 @@ async def index(request: Request):
                 species, isinvasive = await identifier(img)
                 # species = "other" #測試retry_confirm
                 # isinvasive = "False" #測試retry_confirm
-                print(species, isinvasive)
+                logging.debug(f"result: {species}, {isinvasive}")
                 # species = "other"
                 # if species in plants -> save 如果是符合辨識的植物種類就儲存
                 if species != "other":
@@ -251,8 +256,7 @@ async def index(request: Request):
         
         # get all user records (取得使用者的所有歷史紀錄)
         else:
-            userdata = get_all_records(userid)
-            print(userdata)
+            userdata = get_all_records(userid) # 測試MongoDB內容格式
             return userdata
         
     return "ok"        
@@ -263,7 +267,7 @@ async def reply_message(payload: dict) -> str:
     url = "https://api.line.me/v2/bot/message/reply"
     async with aiohttp.ClientSession() as session:
         res = await session.post(url=url, headers=headers, json=payload)
-        print(res.status)
+        logging.debug(f"reply: {res.status}")
         # print("reply",await res.json())
         # print(res.text)
     return "ok"
@@ -294,8 +298,10 @@ async def get_trans_dict(userid: str, **kwargs) -> str:
     if not mode:
         mode = await language(userid)  
 
-    # 
+    # 語言模式暫存到redis
     r.hset(name=userid, key="mode", value=mode)
+
+    logging.debug(f"language: {mode}")
 
     global trans_dict
     
@@ -308,6 +314,7 @@ async def get_trans_dict(userid: str, **kwargs) -> str:
 # 依據richmenuid設定語言
 async def language(userid: str) -> str: 
     
+    # 從Redis暫存中取語言模式
     mode = r.hget(name=userid, key="mode")
     if mode:
         return mode
@@ -321,7 +328,7 @@ async def language(userid: str) -> str:
     async with aiohttp.ClientSession() as session:
         async with session.get(url=url, headers=headers) as response:
             res = await response.json()
-            print(res["richMenuId"])
+            # print(res["richMenuId"])
             # 根據回傳的 richMenuId 取得對應的語言模式
             mode = lan_id[res["richMenuId"]]
 
@@ -493,7 +500,7 @@ async def share_img(data: str) -> dict:
     return msg
 # 取得使用者名稱
 async def get_user_name(userid: str) -> str:
-    # redis hset hget userid: main key, richmenuid & display_name : sub key[expire 20 mins] 
+    # 從redis暫存中取出使用者名稱 
     user_name = r.hget(name=userid, key="display_name")
 
     if user_name:
@@ -506,7 +513,7 @@ async def get_user_name(userid: str) -> str:
             res = await response.json()
             # print(res)
             user_name = res["displayName"]
-
+            # 使用者名稱暫存到redis
             r.hset(name=userid, key="display_name", value=user_name)
 
         return user_name
@@ -535,7 +542,10 @@ async def get_richmenu_id():
 
 # 傳送網頁端登入資訊
 async def login_info(userid: str, display_name: str)  -> str:
-    
+
+    # 使用者名稱如果有空格的話要移除
+    display_name = display_name.replace(" ", "")
+
     mode = await language(userid)
     token = await get_access_token(userid, display_name)
 
@@ -545,8 +555,12 @@ async def login_info(userid: str, display_name: str)  -> str:
     return uri
 
 # 取得網頁access token
-async def get_access_token(userid: str, display_name: str) -> str:
+async def get_access_token(userid: str, display_name: str) -> str: # 修改display_name中的空格
     csrf_token = await get_csrf_token()
+
+    # 使用者名稱如果有空格的話要移除
+    display_name = display_name.replace(" ", "")
+    
     data = {
         "userid" : userid[:7],
         "display_name" : display_name

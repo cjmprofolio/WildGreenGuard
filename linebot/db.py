@@ -86,20 +86,21 @@ def get_species_records(userid: str, species: str, skip) -> list:
 
 # 旋轉木馬選單歷史紀錄(限10筆筆數)
 def get_user_records(userid: str, skip) -> list:
-    db = client.wwg
-    users = db.users
+    with MongoClient(mongodb_url) as client:
+        db = client.wwg
+        users = db.users
 
-    cursor =users.aggregate([
-        {"$match": {"userid": userid}},
-        {"$unwind": "$records"},
-        {"$group": {"_id": "$records.species", "total" : {"$sum" : 1}}},
-        {"$sort": {"total": -1, "_id": 1}},
-        {"$skip": skip},
-        {"$limit": 10},
-        {"$project":{"_id":1, "total": 0}}
-    ])
-    result = [obj for obj in cursor]
-    return result
+        cursor =users.aggregate([
+            {"$match": {"userid": userid}},
+            {"$unwind": "$records"},
+            {"$group": {"_id": "$records.species", "total" : {"$sum" : 1}}},
+            {"$sort": {"total": -1, "_id": 1}},
+            {"$skip": skip},
+            {"$limit": 10},
+            {"$project":{"_id":1, "total": 0}}
+        ])
+        result = [obj for obj in cursor]
+        return result
 
 # 針對模型判斷植物的學名及是否為外來種
 def get_distinct_plant(idx) -> list:

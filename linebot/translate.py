@@ -86,7 +86,7 @@ trans_dict = {
     "visweb":["前往網頁","Visit the website","Webサイトを訪れる"],
     "loginfo":["登入資訊","Obtain login info","ログイン情報を取得する"],
     # 網頁
-    "real":["即時影像植物辨識","Real-time Image-Based Plant Identification","リアルタイム画像識別"],
+    "yolo":["YOLO影像辨識","YOLO Image Identification","YOLO画像識別"],
     "data":["植物資料庫","Plant Database","植物データベース"],
     "record":["植物辨識紀錄","Plant Identification records","植物識別履歴"],
     "dt":["資料","Data","データ"],
@@ -106,17 +106,17 @@ trans_dict = {
     "nasp":["非外來種","Native Species","在来種"],
     "res":["結果","Result","結果"],
     # 網頁介紹
-    "webintro":["是一款以台灣入侵種為主題的外來種植物圖片辨識網站，兼具line機器人服務平台，\n有中英日文切換功能，操作簡單、使用便利。","It is a website designed to identify invasive plant species in Taiwan, featuring a Line Bot platform.\nIt supports Chinese, English, and Japanese and provides a user-friendly experience.","WildGreenGuard は台湾の外来種植物を識別するためのウエブサイトであり、Line Bot を備えている。\n中国語、英語、日本語3言語に対応しており、使いやすいサービスを提供している。"],
+    "webintro":["是一款以台灣入侵種為主題的外來種植物圖片辨識網站，兼具line機器人服務平台，\n有中英日文切換功能，操作簡單、使用便利。\n選單中的「植物資料庫」列出可辨識的植物物種。如有操作上的疑問，可以查閱「常見問題」以獲得解答。","It is a website designed to identify invasive plant species in Taiwan, featuring a Line Bot platform.\nIt supports Chinese, English, and Japanese and provides a user-friendly experience.\nThe “Plant Database” lists plant species that can be identified by WildGreenGuard.\nFor any inquiries, please refer to the “FAQ” section.","WildGreenGuard は台湾の外来種植物を識別するためのウエブサイトであり、Line Bot を備えている。\n中国語、英語、日本語3言語に対応しており、使いやすいサービスを提供している。\nメニューの「植物データベース」では、識別可能な植物の種類を一覧にしている。\nご不明点がある場合は「FAQ」をご参照ください。"],
     "intro":["這是一個辨識台灣外來種植物的網站","It is a website designed to identify invasive plant species in Taiwan.","台湾の外来植物を識別するためのウエブサイトである。"],
     # 常見問題
-    "q1":["1. 可辨識的植物有哪些?","What kind of plants can WildGreenGuard identify?","WildGreenGuardはどの種類の植物を識別できる？"],
+    "q1":["1. 可辨識的植物有哪些?","1. What kind of plants can WildGreenGuard identify?","1. WildGreenGuardはどの種類の植物を識別できる？"],
     "a1":["可參考網頁版的「植物資料庫」，裡面列出可辨識的植物種類及植物簡介。","You can refer to the web version of “Plant Database”,\nwhich lists plant species that can be identified by WildGreenGuard and provides plant introductions.","「植物データベース」のウエブ版を参考にしてください。\nこちらでは、WildGreenGuardによって識別可能な植物種とその植物の一覧を掲載してる。"],
     "q2":["2. 若無法讀取植物辨識結果該怎麼辦?","2. Why is plant image recognition not successful?","2. どうして画像がうまく認識されない?"],
     "a2":["上傳的植物圖片需在陽光充足的環境下拍攝，且畫面須清晰不模糊。\n也可上傳不同拍攝角度的植物圖片以利辨識。","The uploaded plant photos should be taken in well-lit conditions, and the images must be clear.\nUploading images from different angles would improve the success rate of recognition.","画像が鮮明でない場合、正しい検索結果が表示されない場合があります。\n明るい環境での撮影と撮影する角度や位置を変更することをおすすめします。"],
-    "q3":["3. 如何獲得網頁版的登入資訊?","How to obtain the login information for the web version?","ウエブ版のログイン情報をどうのように取得できる？"],
+    "q3":["3. 如何獲得網頁版的登入資訊?","3. How to obtain the login information for the web version?","3. ウエブ版のログイン情報をどうのように取得できる？"],
     "a3":["點選Line bot的「網頁」功能，並按「登入資訊」即可獲得使用者代碼及使用者名稱。","Tap on the ‘Web’ option within the Line bot’s rich menu, then select ‘Login info’  to obtain the user ID and username.","Line ボットのリッチメニューで「Web」をタップし、「ログイン情報を取得する」を選択して、ユーザーIDとユーザー名を取得できる。"],
-    "q4":["4. 使用即時影像辨識時，為什麼會出現殘影?","Why does image sticking occur when using real-time image-based identification?","リアルタイム画像識別を使用する際、なぜ残像が残る？"],
-    "a4":["使用即時影像辨識時，建議將植物平放，減少殘影的產生，以便更容易進行辨識。","When using real-time image identification, it is recommended to place plants stably to reduce the occurrence of image sticking,\nfacilitating better identification.","リアルタイム画像識別を使用する際、植物を平らな面に置くことをおすすめする。\nこれにより残像が少なくなり、よりスムーズな識別が可能となる。"],
+    "q4":["4. 使用YOLO影像辨識時，如何減少結果中方框的重疊?","4. How to reduce the overlap of bounding boxes in the results when using YOLO Image Identification?","4. YOLO画像識別を使用する際、出力結果の重なったバウンディングボックスを減らす方法がある？"],
+    "a4":["使用YOLO影像辨識時，建議讓畫面中植物特徵不要複雜，減少方框的產生，以便更容易進行辨識。","When using YOLO Image Identification, it is recommended to focus on scenes with a single plant feature,\nreducing the occurrence of bounding boxes for better identification.","YOLO画像識別を使用する際には、画面中の植物特徴をシンプルに保つことをお勧めし、\nバウンディングボックスの生成を減らすことで、よりスムーズな識別が可能となる。"],
     # 
     # 人名
     "ZJM":["張家銘","ZHANG, JIA-MING","ちょうかめい"],

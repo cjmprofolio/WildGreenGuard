@@ -41,7 +41,8 @@ ALLOWED_HOSTS = ["*"]
 # add trusted sites
 CSRF_TRUSTED_ORIGINS = ["https://" + os.environ["DNS"] + "/*", 
                         "http://" + os.environ["WEB_DNS"] + "/*",
-                        "http://" + os.environ["LINE_DNS"] + "/*"]
+                        "http://" + os.environ["LINE_DNS"] + "/*",
+                        "https://ebf4-111-249-10-159.ngrok-free.app/*"]
 
 # Application definition
 

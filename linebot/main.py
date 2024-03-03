@@ -17,7 +17,7 @@ import logging
 # FastAPI
 app = FastAPI()
 
-# 將logs級別設置為DEBUG
+# 將logging級別設置為DEBUG
 logging.basicConfig(level="DEBUG")
 
 
@@ -244,7 +244,7 @@ async def index(request: Request):
     # for web login user 
     else:
         is_species = events[0].get("species", False)
-        # save user record
+        # save user record (儲存使用者紀錄)
         if is_species:
             species = events[0]["species"]
             isinvasive = events[0]["isinvasive"]
@@ -319,9 +319,9 @@ async def language(userid: str) -> str:
     if mode:
         return mode
     
-    lan_id = {"richmenu-dcdf1066f7a3e966f6f8c67dfea82165": "chi", 
-              "richmenu-2e7e938dc7dc9bc85467e2a1b390b0e4": "en", 
-              "richmenu-2af34192d6e40ad1954d4e874289ac03": "jp"}
+    lan_id = {"richmenu-8efd417031f98d85d6b31a7e092db9a8": "chi",
+              "richmenu-08b61ee74ee84ed6a99cda1ea9537ee5": "en", 
+              "richmenu-f06501417699e11acd495b56df9e77ed": "jp"}
     
     url = f"https://api.line.me/v2/bot/user/{userid}/richmenu"
         # 使用 aiohttp 客戶端建立連線，發送 GET 請求
@@ -422,9 +422,9 @@ async def upload_image() -> dict:
     imageUrl_a = "https://storage.googleapis.com/green01/identify/1.png"
     imageUrl_b = "https://storage.googleapis.com/green01/identify/2.png"
     
-    return await quick_reply(trans_dict["upaimg"], 
-                             [{"imageUrl":imageUrl_a, "action_type":"cameraRoll", "label":trans_dict["upimg"]},
-                            {"imageUrl":imageUrl_b, "action_type":"camera", "label":trans_dict["cameraon"]}])
+    return await quick_reply(trans_dict["upaimg"], \
+                             [{"imageUrl":imageUrl_a, "action_type":"cameraRoll", "label":trans_dict["upimg"]},\
+                              {"imageUrl":imageUrl_b, "action_type":"camera", "label":trans_dict["cameraon"]}])
 
 # 旋轉木馬選單-歷史紀錄查詢功能(列出使用者辨識成功的植物種類)
 async def get_history(user_records: list, data: dict) -> dict:

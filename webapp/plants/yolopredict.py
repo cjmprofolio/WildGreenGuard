@@ -3,6 +3,7 @@ import numpy as np
 from PIL import Image
 import io
 from django.conf import settings
+import logging
 
 
 async def yolo_predict(input):
@@ -18,7 +19,7 @@ async def yolo_predict(input):
 
     # convert json to Image
     img_array = np.array(res.json()["result"],dtype=np.uint8)
-    print(img_array.shape)
+    logging.debug(img_array.shape)
     im = Image.fromarray(img_array)
     im = im.convert("RGB")
 

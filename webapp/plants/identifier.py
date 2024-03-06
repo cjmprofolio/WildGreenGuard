@@ -33,6 +33,8 @@ def preprocessing(img_byte):
     im = Image.open(io.BytesIO(img_byte))
     im = im.convert("RGB")
     im = im.resize((size, size))
-    tensor =  np.expand_dims(np.asarray(im), axis=0)
+    rescaled_img = np.asarray(im)/ 255.0
+    tensor =  np.expand_dims(rescaled_img, axis=0)
     instance = tensor.tolist()
+    
     return instance

@@ -111,10 +111,14 @@ def records(request):
     if request.method == "GET":
         userid = request.user.userid
         user_records = async_to_sync(get_user_data)(userid)
-        user_records = user_records[0]["records"]
-        logging.debug(user_records)
-        settings.TRANS_DICT["user_records"] = user_records
-        return render(request, "plants/records.html", settings.TRANS_DICT)
+        if user_records:
+            user_records = user_records[0]["records"]
+            logging.debug(user_records)
+            settings.TRANS_DICT["user_records"] = user_records
+            return render(request, "plants/records.html", settings.TRANS_DICT)
+        else:
+            return render(request, "plants/records.html", settings.TRANS_DICT)
+
 
 # list all available species
 def diagram(request):

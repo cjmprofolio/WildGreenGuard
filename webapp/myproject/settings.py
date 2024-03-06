@@ -34,15 +34,19 @@ SECRET_KEY = os.environ["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+# for deployment
+# DEBUG = False
 
-# ALLOWED_HOSTS = [os.environ["DNS"], os.environ["WEB_DNS"], os.environ["LINE_DNS"], "34.173.235.152", "localhost", "127.0.0.1"]
 ALLOWED_HOSTS = ["*"]
+# for deployment
+# ALLOWED_HOSTS = [os.environ["DNS"], os.environ["WEB_DNS"], os.environ["LINE_DNS"], "34.173.235.152", "localhost", "127.0.0.1"]
+
 
 # add trusted sites
 CSRF_TRUSTED_ORIGINS = ["https://" + os.environ["DNS"] + "/*", 
                         "http://" + os.environ["WEB_DNS"] + "/*",
                         "http://" + os.environ["LINE_DNS"] + "/*",
-                        "https://ebf4-111-249-10-159.ngrok-free.app/*"]
+                        ]
 
 # Application definition
 
@@ -150,8 +154,7 @@ LOGIN_URL = "/plants/"
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = "static/"
-
-STATIC_ROOT = ""
+# STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
 # STATICFILES_DIRS = [
 #     os.path.join(BASE_DIR , "plants"),
@@ -164,7 +167,6 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 # set auth usermodel
-
 AUTH_USER_MODEL = "users.CustomUserModel"
 AUTHENTICATION_BACKENDS = ["users.backends.CustomUserModelBackend"]
 
@@ -174,11 +176,10 @@ AUTHENTICATION_BACKENDS = ["users.backends.CustomUserModelBackend"]
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # for line api
-# LINE_API_URL = "http://" + os.environ["LINE_DNS"] + ":5000/"
-LINE_API_URL = "https://5b25-219-68-41-197.ngrok-free.app/"
+LINE_API_URL = "http://" + os.environ["LINE_DNS"] + ":5000/"
 
 # for yolo api
-YOLO_API_URL = "http://127.0.0.1:5000/"
+YOLO_API_URL = os.environ["YOLO_API_URL"]
 
 # for tensorflow/serving
 IM_SIZE = int(os.environ["IM_SIZE"])
@@ -196,7 +197,7 @@ if DEBUG:
             TRANS_REPO = json.load(f)
 else:
     trans_url = "https://storage.googleapis.com/green01/static/plants/json/translate.json"
-    res = requests.get("https://storage.googleapis.com/green01/static/plants/json/translate.json")
+    res = requests.get(trans_url)
     TRANS_REPO = json.loads(res.content)
 
 TRANS_DICT = {k:v[0] for k, v in TRANS_REPO.items()}
@@ -206,16 +207,22 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "myproject/wildgreen-411520-37d99
 
 # configure STORAGES for deployment
 # STORAGES = {
-#     "default": {
-#         "BACKEND": "django.core.files.storage.FileSystemStorage",
-#     },
+    # default settings, use MEDIA_URL as base_url and MEDIA_ROOT as location
+    # "default": {
+    #     "BACKEND": "django.core.files.storage.FileSystemStorage",
+    # },
+    # default settings, use STATIC_URL as base_url and STATIC_ROOT as location
+    # "staticfiles" :{
+    #     "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    # },
+
 #     "staticfiles" :{
 #         "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
 #         "OPTIONS": {
 #             "bucket_name": "green01",
 #             "location": "static",
 #         }
-#     },
+#     },    
 # }
 
 # for logging setting

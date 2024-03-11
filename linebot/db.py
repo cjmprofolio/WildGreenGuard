@@ -1,6 +1,10 @@
 from pymongo import MongoClient
 from datetime import datetime
 import configparser
+import logging
+
+# 設定logging的級別為DEBUG
+logging.basicConfig(level="DEBUG")
 
 # 讀取配置文件
 config = configparser.ConfigParser()
@@ -21,9 +25,30 @@ client = MongoClient(mongodb_url)
 # 確認是否成功連線
 try:
     client.admin.command("ping")
-    print("Pinged your deployment. You successfully connected to MongoDB!")
+    logging.info(f"Pinged your deployment. You successfully connected to MongoDB!")
 except Exception as e:
-    print(e)
+    logging.debug(e)
+
+# database structure
+"""
+Users
+
+"userid" : "Uea2325",
+"records" : [
+{
+    "species" : "Tithonia_diversifolia",
+    "imgurl" : "https://storage.googleapis.com/green01/record/Uea2325/img_20240303141612.jpg",
+    "isinvasive" : True,
+    "datetime" : datetime.datetime(2024, 3, 3, 14, 16, 13, 964000)
+}...
+]
+----------------------------------------------------------------------------------------------
+Plants
+
+"scientific name" : "Tithonia_diversifolia",
+"imgurl" : "https://storage.googleapis.com/green01/plant/Tithonia_diversifolia.jpg",
+"isinvasive" : True
+"""
 
 # 取得所有植物的學名
 def get_plants(species: str)-> list:
@@ -80,7 +105,6 @@ def get_species_records(userid: str, species: str, skip) -> list:
             {"$project":{"_id":0,"records.imgurl":1}}
         ])
         result = [obj for obj in cursor]
-        # print(result)
         return result
 
 
@@ -118,20 +142,12 @@ def get_all_records(userid: str) -> list:
         users = db.users
         cursor = users.aggregate([
             {"$match": {"userid": {"$regex":f"^{userid}.+"}}},
-            {"$project": {
-                "records": {
-                    "$filter": {
-                        "input": "$records",
-                        "as": "record",
-                        "cond": {},
-                        "limit":20
-                    }
-                }
-            }},
+            {"$unwind": "$records"},
             {"$sort": {"records.datetime": -1}},
+            {"$limit": 20},
             {"$project":{"_id":0, "records":1}}
         ])
-        result = [obj for obj in cursor]
+        result = [obj["records"] for obj in cursor]
         return result
 
 

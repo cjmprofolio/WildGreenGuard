@@ -109,11 +109,11 @@
 
 ## System design
 
-![system diagram](./images/System%20Diagram.png)
+![system diagram](https://storage.googleapis.com/green01/system%20diagram.png)
 
 ## Database Design
 
-![database diagram](./images/Database%20Diagram.png)
+![database diagram](https://storage.googleapis.com/green01/Database_Diagram.png)
 
 ## Members
 

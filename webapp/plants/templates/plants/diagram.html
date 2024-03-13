@@ -51,9 +51,9 @@
                     </h5>
                     <h6 class="card-subtitle mb-2 text-body-secondary">
                         {% if plant.isinvasive %}
-                        外來種
+                        {{ insp }}
                         {% else %}
-                        非外來種
+                        {{ nasp }}
                         {% endif %}
                     </h6>
                     <p class="card-text">

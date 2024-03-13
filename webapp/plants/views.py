@@ -112,7 +112,6 @@ def records(request):
         userid = request.user.userid
         user_records = async_to_sync(get_user_data)(userid)
         if user_records:
-            user_records = user_records[0]["records"]
             logging.debug(user_records)
             settings.TRANS_DICT["user_records"] = user_records
             return render(request, "plants/records.html", settings.TRANS_DICT)

@@ -1,12 +1,14 @@
 # WildGreenGuard
 
-
 - [WildGreenGuard](#wildgreenguard)
+  - [Result Preview](#result-preview)
   - [Object](#object)
   - [Invasive plants candidate](#invasive-plants-candidate)
     - [Plan](#plan)
-    - [Current (2023/12/18~2024/02/06)](#current-2023121820240206)
+    - [Actual](#actual)
   - [Flow](#flow)
+    - [Plan](#plan-1)
+    - [Actual](#actual-1)
   - [System design](#system-design)
   - [Database Design](#database-design)
   - [Members](#members)
@@ -14,32 +16,23 @@
   - [Brief Summary](#brief-summary)
   - [References](#references)
 
+## Result Preview
+[![Presentation Video](https://img.youtube.com/vi/UHT4iaAthT8/0.jpg)](https://youtu.be/UHT4iaAthT8)
 
 ## Object
 
-- Currently...
+- Currently,
   - Invaded species have been problems for a long time. 
-  - Though, some apps provide servers But ...
+  - Though, some apps provide servers But plants 
   - Gain more public attention on the invaded species.
 
-- Our project tries to... 
-  - Real-time identify invasive plants in Taiwan.
-  - accuracy to ...
-  - precision to ...
-  
-- We are going to use ...
-  - Build model with Tensorflow 
-  - Line with FastApi
-  - Web with Javascript and Django
+- Our project tries to 
+  - Identify the uploaded plant image species 
+  - Real-time identify plants
 
-- Flow diagram is like ...
-  - a
-  - b
-  - c
-
-- Our 
 
 ## Invasive plants candidate
+
 ### Plan
 |入侵種|相似植物|note|
 |-|-|-|
@@ -56,31 +49,28 @@
 |昭和草|
 |豬草|
 
-### Current (2023/12/18~2024/02/06)
-|入侵種|相似植物|note|
-|-|-|-|
-|紫色霍香薊|||
-|大花咸豐草|||
-|孟仁草|||
-|昭和草|||
-|馬櫻丹|||
-|銀合歡|||
-|小花蔓澤蘭|||
-|象草|芒草||
-|合果芋|||
-|王爺葵|||
-|落地生根||候補|
-|粗毛小米菊||候補|
-
-|非入侵種|相似植物|note|
-|-|-|-|
-|刺莧|||
-|雞冠花|||
-|芒草|象草||
-|牛筋草|||
+### Actual
+|物種名稱|是否為入侵種|相似植物|
+|-|:-:|-|
+|紫色霍香薊|O||
+|大花咸豐草|O||
+|雞冠花|O||
+|孟仁草|O||
+|昭和草|O||
+|馬櫻丹|O||
+|銀合歡|O||
+|小花蔓澤蘭|O||
+|象草|O|芒草|
+|合果芋|O||
+|王爺葵|O||
+|刺莧|X||
+|芒草|X|象草|
+|牛筋草|X||
 
 
 ## Flow
+
+### Plan
 
 1. 
     1. Webscrap images of species listed in [database](https://gisd.biodiv.tw/tw/).
@@ -98,6 +88,25 @@
     3. Perform the model on edge device with [tensorflow lite](https://www.tensorflow.org/lite).  
 
 
+### Actual
+
+1. Collecting data  
+   Mostly take plant photos by ourselves.
+   Test our training model with online public photos.   
+  
+2. Labelling images  
+   Use [Roboflow](https://roboflow.com/) to annotate the roi, then export the yolov8.yml for training.
+
+3. Training model  
+   - Rotate and resize images for multi-label classification.
+   - Apply the data into [Ultralytics](https://docs.ultralytics.com/)  and train the yolo model.  
+
+4. Application  
+    - Connect the model to [Line bot](https://github.com/line/line-bot-sdk-python) for using.
+    - Connect to web [Django](https://www.djangoproject.com/) for using.
+    - Using [TFserving](https://www.tensorflow.org/tfx/serving/docker) to serve the multi-label classification.
+    - Using Flask to serve the yolo model. 
+
 ## System design
 
 ![system diagram](./images/System%20Diagram.png)
@@ -105,7 +114,6 @@
 ## Database Design
 
 ![database diagram](./images/Database%20Diagram.png)
-
 
 ## Members
 

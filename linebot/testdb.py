@@ -1,7 +1,7 @@
 import unittest
 from datetime import datetime
 from pymongo import MongoClient
-from db import get_plants, save_record, get_distinct_plant, get_all_records, get_species_records, get_user_records
+from db import get_plants, save_record, get_distinct_plant
 import configparser
 
 # 讀取配置文件
@@ -40,7 +40,7 @@ class TestMethods(unittest.TestCase):
             db = client.wwg
             db.plants.insert_one(dummy_plants)
 
-    # 在測試結束後的善後清理 ->  刪除假資料: scientific name "a", dummy_userid
+    # 在測試結束後的善後清理 -> 刪除假資料: scientific name "a", dummy_userid
     @classmethod
     def tearDownClass(cls) -> None:
         with MongoClient(mongodb_url) as client:
@@ -48,7 +48,7 @@ class TestMethods(unittest.TestCase):
             db.plants.delete_one({"scientific name": "a"})
             db.users.delete_one({"userid":dummy_userid})
 
-    # 測試db.py的get_plants -> scientific name是否為a, isinvasive是否為 True
+    # 測試db.py的get_plants -> scientific name是否為a, isinvasive是否為True
     def test_name(self) -> None:
         plant = get_plants("a")
         self.assertEqual(plant["scientific name"], "a", "scientific names not equaled")
@@ -63,7 +63,7 @@ class TestMethods(unittest.TestCase):
             record = user["records"][0]
             self.assertEqual(record["imgurl"], "/path/to/user/a.jpg", "there is no record")
     
-    # 測試db.py的get_distinct_plant -> 排序第15個的資料，scientific name是否為a, isinvasive是否為 True
+    # 測試db.py的get_distinct_plant -> 排序第15個的資料，scientific name是否為a, isinvasive是否為True
     def test_distinct_plant(self) -> None:
         idx = 14
         plant = get_distinct_plant(idx)

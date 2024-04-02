@@ -17,7 +17,7 @@ dummy_userid = "U12345678"
 
 
 class TestMethod(unittest.TestCase):
-    # 在測試之前的前置作業 ->上傳到google cloud storage的圖片網址、讀取測試用的圖片"./image.jpg"
+    # 在測試之前的前置作業 -> 上傳到google cloud storage的圖片網址、讀取測試用的圖片"./image.jpg"
     def setUp(self) -> None:
         self.dummy_destination_blob_name = f"record/{dummy_userid[:7]}/img_{datetime.now().strftime('%Y%m%d%H%M%S')}.jpg"
         with open ("./image.jpg","rb") as f:
@@ -31,7 +31,7 @@ class TestMethod(unittest.TestCase):
         blob = bucket.blob(self.dummy_destination_blob_name)
         blob.delete()
 
-    # 測試gcloud.py的upload_blob_from_stream ->圖片網址是否相符、下載其圖片與測試用的圖片"./image.jpg"是否相同
+    # 測試gcloud.py的upload_blob_from_stream -> 圖片網址是否相符、下載其圖片與測試用的圖片"./image.jpg"是否相同
     def test_upload_blob_from_stream(self) -> None:
         img_url = asyncio.run(upload_blob_from_stream(self.test_img, self.dummy_destination_blob_name))
         self.assertEqual(img_url, f"https://storage.googleapis.com/green01/{self.dummy_destination_blob_name}", "img_url not matched")

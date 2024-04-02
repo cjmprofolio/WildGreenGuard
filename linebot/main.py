@@ -201,7 +201,7 @@ async def index(request: Request):
 
         # 型別為message
         elif events[0]["type"] == "message":
-             if events[0]["message"]["type"] == "image":
+            if events[0]["message"]["type"] == "image":
 
                 # 取得圖片id
                 img_id = events[0]["message"]["id"]
@@ -344,9 +344,7 @@ async def get_upload_image(img_id: str):
             stream = response.content
             st = await stream.read()
             img = Image.open(io.BytesIO(st))
-#             # img.show()
-#     # print("return image")
-    # print(type(img))
+
     return img
 
 # 辨識圖片成功的回覆訊息(帶入用戶名跟植物名)
@@ -550,7 +548,6 @@ async def login_info(userid: str, display_name: str)  -> str:
     token = await get_access_token(userid, display_name)
 
     uri = web_dns + f"?source=True&userid={userid[:7]}&mode={mode}&token={token}"
-    # print(uri)
 
     return uri
 

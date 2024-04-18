@@ -27,14 +27,13 @@ async def identifier(img:Image):
     async with aiohttp.ClientSession() as session:
         res = await session.post(url=url, json=data)
         result = await res.json()
-        print(result)
         predictions = result["predictions"]
     # result = model.predict(resized_img) 
     # if np.max(predictions, axis=1) < 0.5: # [[0.1, 0.2, 0.3]]
     #     return 'other', None
     # 從模型預測結果中取得最有可能的植物種類索引
     idx = np.argmax(predictions, axis=1)
-    print(idx)
+
     # 根據索引取得植物種類和是否具侵入性
     species, isinvasive = get_distinct_plant(int(idx[0])).values()
     return species, isinvasive
@@ -48,7 +47,6 @@ async def preprocessing(img: Image):
     array = array / 255.0
     # 在陣列的第一維度上增加一個維度，以符合tensorflow模型輸入的格式(四維)
     input_img = np.expand_dims(array, axis=0)
-    # print(input_img)
     
     return input_img
 

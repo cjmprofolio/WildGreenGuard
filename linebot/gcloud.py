@@ -16,8 +16,10 @@ async def upload_blob_from_stream(img, destination_blob_name):
 
     # 將圖片轉換為位元（JPEG 格式）
     img_byte_arr = io.BytesIO()
+    # Line傳輸過來的圖片型別
     if isinstance(img, Image.Image):
         img.save(img_byte_arr, format="JPEG")
+    # 網頁傳輸過來的圖片型別
     if isinstance(img, bytes):
         img_byte_arr.write(img)
         
